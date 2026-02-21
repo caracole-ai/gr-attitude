@@ -203,7 +203,7 @@ export interface IMissionFilters {
 }
 
 export interface IAuthResponse {
-  token: string;
+  accessToken: string;
   user: IUser;
 }
 
