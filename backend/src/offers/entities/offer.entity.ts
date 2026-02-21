@@ -60,10 +60,10 @@ export class Offer {
   @CreateDateColumn()
   createdAt: Date;
 
-  @Column({ type: 'datetime' })
+  @Column()
   expiresAt: Date;
 
-  @Column({ type: 'datetime', nullable: true })
+  @Column({ nullable: true })
   closedAt: Date | null;
 
   @ManyToOne(() => User, (user) => user.offers)

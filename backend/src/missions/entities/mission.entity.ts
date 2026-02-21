@@ -65,10 +65,10 @@ export class Mission {
   @CreateDateColumn()
   createdAt: Date;
 
-  @Column({ type: 'datetime' })
+  @Column()
   expiresAt: Date;
 
-  @Column({ type: 'datetime', nullable: true })
+  @Column({ nullable: true })
   closedAt: Date | null;
 
   @Column({ type: 'text', nullable: true })
