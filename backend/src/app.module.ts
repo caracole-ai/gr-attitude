@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ScheduleModule } from '@nestjs/schedule';
+import { ThrottlerModule } from '@nestjs/throttler';
 import databaseConfig from './config/database.config.js';
 import redisConfig from './config/redis.config.js';
 import { AuthModule } from './auth/auth.module.js';
@@ -26,6 +27,12 @@ import { AppController } from './app.controller.js';
       useFactory: (configService: ConfigService) => ({
         ...configService.get('database'),
       }),
+    }),
+    ThrottlerModule.forRoot({
+      throttlers: [
+        { name: 'short', ttl: 60000, limit: 20 },
+        { name: 'long', ttl: 600000, limit: 100 },
+      ],
     }),
     ScheduleModule.forRoot(),
     AuthModule,

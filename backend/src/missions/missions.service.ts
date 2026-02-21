@@ -29,8 +29,8 @@ export class MissionsService {
   ) {}
 
   async findAll(filters: MissionFiltersDto) {
-    const page = filters.page || 1;
-    const limit = filters.limit || 20;
+    const page = Math.max(filters.page || 1, 1);
+    const limit = Math.min(Math.max(filters.limit || 20, 1), 100);
     const skip = (page - 1) * limit;
 
     const qb = this.missionsRepository

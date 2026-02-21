@@ -34,6 +34,11 @@ function daysFromNow(days: number): Date {
 }
 
 async function seed() {
+  if (process.env.NODE_ENV === 'production') {
+    console.error('Seeding is not allowed in production. Set NODE_ENV to something else.');
+    process.exit(1);
+  }
+
   await dataSource.initialize();
   console.log('Database connected.');
 
@@ -50,7 +55,8 @@ async function seed() {
     return;
   }
 
-  const passwordHash = await bcrypt.hash('password123', 10);
+  const seedPassword = process.env.SEED_PASSWORD || 'Password1!';
+  const passwordHash = await bcrypt.hash(seedPassword, 10);
 
   // --- Users ---
   const users = await userRepo.save([

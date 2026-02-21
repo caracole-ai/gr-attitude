@@ -11,8 +11,8 @@ export class FacebookStrategy extends PassportStrategy(Strategy, 'facebook') {
     configService: ConfigService,
   ) {
     super({
-      clientID: configService.get<string>('FACEBOOK_APP_ID', ''),
-      clientSecret: configService.get<string>('FACEBOOK_APP_SECRET', ''),
+      clientID: configService.get<string>('FACEBOOK_APP_ID') || 'not-configured',
+      clientSecret: configService.get<string>('FACEBOOK_APP_SECRET') || 'not-configured',
       callbackURL: configService.get<string>('FACEBOOK_CALLBACK_URL', 'http://localhost:3001/auth/facebook/callback'),
       scope: ['email'],
       profileFields: ['id', 'emails', 'name', 'displayName', 'photos'],
@@ -35,12 +35,14 @@ export class FacebookStrategy extends PassportStrategy(Strategy, 'facebook') {
       [profile.name?.givenName, profile.name?.familyName].filter(Boolean).join(' ') ||
       email.split('@')[0];
 
+    // Facebook does not reliably indicate email verification — treat as unverified for account linking safety
     const result = await this.authService.findOrCreateOAuthUser({
       provider: 'facebook',
       providerId: profile.id,
       email,
       displayName,
       avatarUrl: profile.photos?.[0]?.value,
+      emailVerified: false,
     });
 
     done(null, result);

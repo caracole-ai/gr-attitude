@@ -15,10 +15,18 @@ export default function OAuthCallbackPage() {
     if (processed.current) return;
     processed.current = true;
 
-    const token = searchParams.get('token');
+    // Read token from URL fragment (not query param) to avoid server-side logging
+    const hash = window.location.hash.substring(1);
+    const hashParams = new URLSearchParams(hash);
+    const token = hashParams.get('token');
+
+    // Error still comes via query param (not sensitive)
     const error = searchParams.get('error');
 
     if (token) {
+      // Clean the URL immediately to remove token from history
+      window.history.replaceState(null, '', window.location.pathname);
+
       loginWithToken(token)
         .then(() => {
           toast.success('Connexion reussie !');

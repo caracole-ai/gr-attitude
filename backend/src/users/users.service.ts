@@ -5,6 +5,7 @@ import { User } from './entities/user.entity.js';
 import { Mission } from '../missions/entities/mission.entity.js';
 import { Contribution } from '../contributions/entities/contribution.entity.js';
 import { Offer } from '../offers/entities/offer.entity.js';
+import { Notification } from '../notifications/entities/notification.entity.js';
 import { MissionStatus } from '../shared/enums.js';
 
 @Injectable()
@@ -18,6 +19,8 @@ export class UsersService {
     private readonly contributionsRepository: Repository<Contribution>,
     @InjectRepository(Offer)
     private readonly offersRepository: Repository<Offer>,
+    @InjectRepository(Notification)
+    private readonly notificationsRepository: Repository<Notification>,
   ) {}
 
   findAll(): Promise<User[]> {
@@ -59,6 +62,38 @@ export class UsersService {
       relations: ['mission'],
       order: { createdAt: 'DESC' },
     });
+  }
+
+  async deleteAccount(userId: string): Promise<void> {
+    // Delete user data in order (respect FK constraints)
+    await this.notificationsRepository.delete({ userId });
+    await this.contributionsRepository.delete({ userId });
+    // Delete contributions on user's missions
+    const userMissions = await this.missionsRepository.find({ where: { creatorId: userId }, select: ['id'] });
+    for (const mission of userMissions) {
+      await this.contributionsRepository.delete({ missionId: mission.id });
+    }
+    await this.missionsRepository.delete({ creatorId: userId });
+    await this.offersRepository.delete({ creatorId: userId });
+    await this.usersRepository.delete(userId);
+  }
+
+  async exportUserData(userId: string) {
+    const user = await this.usersRepository.findOneBy({ id: userId });
+    const missions = await this.missionsRepository.find({ where: { creatorId: userId } });
+    const contributions = await this.contributionsRepository.find({ where: { userId }, relations: ['mission'] });
+    const offers = await this.offersRepository.find({ where: { creatorId: userId } });
+
+    // Strip sensitive fields
+    const { passwordHash, oauthProviderId, ...safeUser } = user || ({} as any);
+
+    return {
+      user: safeUser,
+      missions,
+      contributions,
+      offers,
+      exportedAt: new Date().toISOString(),
+    };
   }
 
   async getUserStats(userId: string) {

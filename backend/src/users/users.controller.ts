@@ -2,9 +2,11 @@ import {
   Controller,
   Get,
   Patch,
+  Delete,
   Body,
   UseGuards,
   NotFoundException,
+  Logger,
 } from '@nestjs/common';
 import { UsersService } from './users.service.js';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard.js';
@@ -13,6 +15,8 @@ import { UpdateUserDto } from './dto/update-user.dto.js';
 
 @Controller('users')
 export class UsersController {
+  private readonly logger = new Logger('UsersController');
+
   constructor(private readonly usersService: UsersService) {}
 
   @UseGuards(JwtAuthGuard)
@@ -38,6 +42,20 @@ export class UsersController {
     }
     const { passwordHash, oauthProviderId, ...result } = user;
     return result;
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete('me')
+  async deleteMe(@CurrentUser() currentUser: { id: string }) {
+    this.logger.log(`Account deletion requested by user: ${currentUser.id}`);
+    await this.usersService.deleteAccount(currentUser.id);
+    return { message: 'Account deleted successfully' };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('me/export')
+  async exportData(@CurrentUser() currentUser: { id: string }) {
+    return this.usersService.exportUserData(currentUser.id);
   }
 
   @UseGuards(JwtAuthGuard)

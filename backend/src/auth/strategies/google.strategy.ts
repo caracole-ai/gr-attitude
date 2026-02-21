@@ -11,8 +11,8 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     configService: ConfigService,
   ) {
     super({
-      clientID: configService.get<string>('GOOGLE_CLIENT_ID', ''),
-      clientSecret: configService.get<string>('GOOGLE_CLIENT_SECRET', ''),
+      clientID: configService.get<string>('GOOGLE_CLIENT_ID') || 'not-configured',
+      clientSecret: configService.get<string>('GOOGLE_CLIENT_SECRET') || 'not-configured',
       callbackURL: configService.get<string>('GOOGLE_CALLBACK_URL', 'http://localhost:3001/auth/google/callback'),
       scope: ['email', 'profile'],
     });
@@ -29,12 +29,16 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
       return done(new UnauthorizedException('No email provided by Google'), false);
     }
 
+    // Google emails are always verified
+    const emailVerified = profile.emails?.[0]?.verified !== false;
+
     const result = await this.authService.findOrCreateOAuthUser({
       provider: 'google',
       providerId: profile.id,
       email,
       displayName: profile.displayName || email.split('@')[0],
       avatarUrl: profile.photos?.[0]?.value,
+      emailVerified,
     });
 
     done(null, result);

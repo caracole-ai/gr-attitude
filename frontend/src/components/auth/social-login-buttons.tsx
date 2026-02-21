@@ -18,6 +18,8 @@ export function SocialLoginButtons() {
       <div className="flex flex-col gap-2">
         <a
           href={`${API_URL}/auth/google`}
+          referrerPolicy="no-referrer"
+          rel="noopener noreferrer"
           className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-md border border-input bg-background px-4 py-2 text-sm font-medium ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
         >
           <svg className="h-4 w-4" viewBox="0 0 24 24">
@@ -42,6 +44,8 @@ export function SocialLoginButtons() {
         </a>
         <a
           href={`${API_URL}/auth/facebook`}
+          referrerPolicy="no-referrer"
+          rel="noopener noreferrer"
           className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-md border border-input bg-background px-4 py-2 text-sm font-medium ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
         >
           <svg className="h-4 w-4" viewBox="0 0 24 24" fill="#1877F2">

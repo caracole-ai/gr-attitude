@@ -16,12 +16,19 @@ import { UsersModule } from '../users/users.module.js';
     PassportModule,
     JwtModule.registerAsync({
       inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_SECRET', 'dev-secret-key'),
-        signOptions: {
-          expiresIn: configService.get('JWT_EXPIRES_IN', '7d') as any,
-        },
-      }),
+      useFactory: (configService: ConfigService) => {
+        const secret = configService.get<string>('JWT_SECRET');
+        if (!secret && process.env.NODE_ENV === 'production') {
+          throw new Error('JWT_SECRET environment variable is required in production');
+        }
+        return {
+          secret: secret || 'dev-secret-key',
+          signOptions: {
+            expiresIn: configService.get('JWT_EXPIRES_IN', '1h') as any,
+            algorithm: 'HS256' as const,
+          },
+        };
+      },
     }),
   ],
   providers: [AuthService, LocalStrategy, JwtStrategy, GoogleStrategy, FacebookStrategy],

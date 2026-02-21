@@ -2,6 +2,8 @@ import { registerAs } from '@nestjs/config';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { join } from 'path';
 
+const isProduction = process.env.NODE_ENV === 'production';
+
 export default registerAs(
   'database',
   (): TypeOrmModuleOptions => {
@@ -13,9 +15,9 @@ export default registerAs(
         return {
           type: 'postgres',
           url: process.env.DATABASE_URL,
-          ssl: { rejectUnauthorized: false },
+          ssl: isProduction ? { rejectUnauthorized: true } : { rejectUnauthorized: false },
           autoLoadEntities: true,
-          synchronize: true,
+          synchronize: !isProduction,
         };
       }
 
@@ -27,7 +29,7 @@ export default registerAs(
         password: process.env.DB_PASSWORD || 'gr_password',
         database: process.env.DB_DATABASE || 'gr_attitude',
         autoLoadEntities: true,
-        synchronize: true,
+        synchronize: !isProduction,
       };
     }
 
@@ -35,7 +37,7 @@ export default registerAs(
       type: 'better-sqlite3',
       database: join(process.cwd(), 'gr_attitude.sqlite'),
       autoLoadEntities: true,
-      synchronize: true,
+      synchronize: !isProduction,
     };
   },
 );
