@@ -164,8 +164,8 @@ export default function ProfilePage() {
                     <CardHeader className="py-3 px-4">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2 min-w-0">
-                          <Badge className={`flex-shrink-0 ${OFFER_TYPE_COLORS[offer.type]}`}>
-                            {OFFER_TYPE_LABELS[offer.type]}
+                          <Badge className={`flex-shrink-0 ${OFFER_TYPE_COLORS[offer.offerType]}`}>
+                            {OFFER_TYPE_LABELS[offer.offerType]}
                           </Badge>
                           {offer.category && (
                             <Badge variant="outline" className="flex-shrink-0">

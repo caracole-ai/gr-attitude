@@ -36,7 +36,7 @@ export default function NewOfferPage() {
   const [form, setForm] = useState<ICreateOffer>({
     title: '',
     description: '',
-    type: OfferType.SERVICE,
+    offerType: OfferType.SERVICE,
     category: MissionCategory.AUTRE,
     availability: '',
     visibility: Visibility.PUBLIC,
@@ -154,8 +154,8 @@ export default function NewOfferPage() {
               <div className="space-y-2">
                 <Label>Type d&apos;offre</Label>
                 <Select
-                  value={form.type}
-                  onValueChange={(v) => updateForm('type', v as OfferType)}
+                  value={form.offerType}
+                  onValueChange={(v) => updateForm('offerType', v as OfferType)}
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -246,7 +246,7 @@ export default function NewOfferPage() {
               )}
               <div className="flex flex-wrap gap-2">
                 <Badge variant="outline">
-                  {OFFER_TYPE_LABELS[form.type]}
+                  {OFFER_TYPE_LABELS[form.offerType]}
                 </Badge>
                 {form.category && (
                   <Badge variant="outline">

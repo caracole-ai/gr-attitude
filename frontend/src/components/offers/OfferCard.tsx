@@ -42,8 +42,8 @@ export function OfferCard({ offer }: OfferCardProps) {
       <Card className="h-full transition-shadow hover:shadow-md cursor-pointer">
         <CardHeader className="pb-2">
           <div className="flex items-center gap-2 mb-1 flex-wrap">
-            <Badge className={OFFER_TYPE_COLORS[offer.type]}>
-              {OFFER_TYPE_LABELS[offer.type]}
+            <Badge className={OFFER_TYPE_COLORS[offer.offerType]}>
+              {OFFER_TYPE_LABELS[offer.offerType]}
             </Badge>
             {offer.category && (
               <Badge variant="outline">

@@ -72,8 +72,8 @@ export default function OffersPage() {
           </SelectContent>
         </Select>
         <Select
-          value={filters.type || ALL_VALUE}
-          onValueChange={(v) => updateFilter('type', v)}
+          value={filters.offerType || ALL_VALUE}
+          onValueChange={(v) => updateFilter('offerType', v)}
         >
           <SelectTrigger>
             <SelectValue placeholder="Type d'offre" />

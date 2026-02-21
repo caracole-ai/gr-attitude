@@ -23,8 +23,8 @@ export default function NotificationsPage() {
   const { data: notifications, isLoading } = useNotifications();
   const markRead = useMarkNotificationRead();
 
-  const handleMarkRead = (id: string, read: boolean) => {
-    if (!read) {
+  const handleMarkRead = (id: string, isRead: boolean) => {
+    if (!isRead) {
       markRead.mutate(id);
     }
   };
@@ -43,20 +43,22 @@ export default function NotificationsPage() {
             <Card
               key={notification.id}
               className={`cursor-pointer transition-colors ${
-                !notification.read ? 'border-primary/30 bg-muted/30' : ''
+                !notification.isRead ? 'border-primary/30 bg-muted/30' : ''
               }`}
-              onClick={() => handleMarkRead(notification.id, notification.read)}
+              onClick={() => handleMarkRead(notification.id, notification.isRead)}
             >
               <CardContent className="py-4">
                 <div className="flex items-start gap-3">
-                  {!notification.read && (
+                  {!notification.isRead && (
                     <span className="mt-1.5 h-2 w-2 rounded-full bg-primary flex-shrink-0" />
                   )}
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-medium">{notification.title}</p>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      {notification.message}
-                    </p>
+                    {notification.body && (
+                      <p className="text-sm text-muted-foreground mt-1">
+                        {notification.body}
+                      </p>
+                    )}
                     <p className="text-xs text-muted-foreground mt-2">
                       {timeAgo(notification.createdAt)}
                     </p>

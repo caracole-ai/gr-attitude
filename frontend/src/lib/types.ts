@@ -121,7 +121,7 @@ export interface IOffer {
   id: string;
   title: string;
   description: string;
-  type: OfferType;
+  offerType: OfferType;
   status: OfferStatus;
   category?: MissionCategory;
   availability?: string;
@@ -140,12 +140,12 @@ export interface INotification {
   id: string;
   type: string;
   title: string;
-  message: string;
-  read: boolean;
+  body: string | null;
+  isRead: boolean;
   createdAt: string;
   userId: string;
-  missionId?: string;
-  offerId?: string;
+  referenceType?: string;
+  referenceId?: string;
 }
 
 export interface ICorrelation {
@@ -182,7 +182,7 @@ export interface ICreateContribution {
 export interface ICreateOffer {
   title: string;
   description: string;
-  type: OfferType;
+  offerType: OfferType;
   category?: MissionCategory;
   availability?: string;
   visibility?: Visibility;

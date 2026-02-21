@@ -18,7 +18,7 @@ import type {
 
 export interface IOfferFilters {
   category?: string;
-  type?: string;
+  offerType?: string;
   search?: string;
   page?: number;
   limit?: number;
@@ -117,11 +117,13 @@ export const missionsApi = {
 
 // Contributions
 export const contributionsApi = {
-  create: (data: ICreateContribution) =>
-    fetchApi<IContribution>('/contributions', {
+  create: (data: ICreateContribution) => {
+    const { missionId, ...body } = data;
+    return fetchApi<IContribution>(`/missions/${missionId}/contributions`, {
       method: 'POST',
-      body: JSON.stringify(data),
-    }),
+      body: JSON.stringify(body),
+    });
+  },
 
   update: (id: string, data: Partial<ICreateContribution>) =>
     fetchApi<IContribution>(`/contributions/${id}`, {
@@ -188,7 +190,10 @@ export const offersApi = {
 
 // Notifications
 export const notificationsApi = {
-  list: () => fetchApi<INotification[]>('/users/me/notifications'),
+  list: async () => {
+    const res = await fetchApi<{ data: INotification[]; total: number }>('/users/me/notifications');
+    return res.data;
+  },
 
   getUnreadCount: () =>
     fetchApi<{ count: number }>('/users/me/notifications/unread-count'),

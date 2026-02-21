@@ -91,8 +91,8 @@ export default function OfferDetailPage({
     <div className="container mx-auto max-w-3xl px-4 py-8 space-y-6">
       {/* Header badges */}
       <div className="flex items-center gap-2 flex-wrap">
-        <Badge className={OFFER_TYPE_COLORS[offer.type]}>
-          {OFFER_TYPE_LABELS[offer.type]}
+        <Badge className={OFFER_TYPE_COLORS[offer.offerType]}>
+          {OFFER_TYPE_LABELS[offer.offerType]}
         </Badge>
         {offer.category && (
           <Badge variant="outline">{CATEGORY_LABELS[offer.category]}</Badge>
