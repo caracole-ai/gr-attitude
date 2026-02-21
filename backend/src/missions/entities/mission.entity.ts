@@ -1,0 +1,89 @@
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  ManyToOne,
+  OneToMany,
+  JoinColumn,
+} from 'typeorm';
+import {
+  MissionStatus,
+  MissionCategory,
+  HelpType,
+  Urgency,
+  Visibility,
+} from '../../shared/enums.js';
+import { User } from '../../users/entities/user.entity.js';
+import { Contribution } from '../../contributions/entities/contribution.entity.js';
+import { Correlation } from '../../correlations/entities/correlation.entity.js';
+
+@Entity('missions')
+export class Mission {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
+
+  @Column({ type: 'uuid' })
+  creatorId: string;
+
+  @Column({ type: 'varchar', length: 120 })
+  title: string;
+
+  @Column({ type: 'text' })
+  description: string;
+
+  @Column({ type: 'enum', enum: MissionCategory })
+  category: MissionCategory;
+
+  @Column({ type: 'enum', enum: HelpType })
+  helpType: HelpType;
+
+  @Column({ type: 'enum', enum: Urgency })
+  urgency: Urgency;
+
+  @Column({ type: 'enum', enum: Visibility, default: Visibility.PUBLIC })
+  visibility: Visibility;
+
+  @Column({ type: 'float', nullable: true })
+  locationLat: number | null;
+
+  @Column({ type: 'float', nullable: true })
+  locationLng: number | null;
+
+  @Column({ type: 'int', default: 10 })
+  locationRadiusKm: number;
+
+  @Column({ type: 'enum', enum: MissionStatus, default: MissionStatus.OUVERTE })
+  status: MissionStatus;
+
+  @Column({ type: 'int', default: 0 })
+  progressPercent: number;
+
+  @Column('simple-array')
+  tags: string[];
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @Column({ type: 'timestamp' })
+  expiresAt: Date;
+
+  @Column({ type: 'timestamp', nullable: true })
+  closedAt: Date | null;
+
+  @Column({ type: 'text', nullable: true })
+  closureFeedback: string | null;
+
+  @Column({ type: 'text', nullable: true })
+  closureThanks: string | null;
+
+  @ManyToOne(() => User, (user) => user.missions)
+  @JoinColumn({ name: 'creatorId' })
+  creator: User;
+
+  @OneToMany(() => Contribution, (contribution) => contribution.mission)
+  contributions: Contribution[];
+
+  @OneToMany(() => Correlation, (correlation) => correlation.mission)
+  correlations: Correlation[];
+}

@@ -1,0 +1,70 @@
+'use client';
+
+import Link from 'next/link';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import {
+  type IOffer,
+  type OfferType,
+  OFFER_TYPE_LABELS,
+  CATEGORY_LABELS,
+} from '@/lib/types';
+
+const OFFER_TYPE_COLORS: Record<OfferType, string> = {
+  don: 'bg-blue-100 text-blue-800 hover:bg-blue-100',
+  competence: 'bg-purple-100 text-purple-800 hover:bg-purple-100',
+  materiel: 'bg-orange-100 text-orange-800 hover:bg-orange-100',
+  service: 'bg-green-100 text-green-800 hover:bg-green-100',
+  ecoute: 'bg-pink-100 text-pink-800 hover:bg-pink-100',
+};
+
+function timeAgo(dateStr: string): string {
+  const now = new Date();
+  const date = new Date(dateStr);
+  const diffMs = now.getTime() - date.getTime();
+  const diffMin = Math.floor(diffMs / 60000);
+  if (diffMin < 1) return "A l'instant";
+  if (diffMin < 60) return `Il y a ${diffMin} min`;
+  const diffH = Math.floor(diffMin / 60);
+  if (diffH < 24) return `Il y a ${diffH}h`;
+  const diffD = Math.floor(diffH / 24);
+  if (diffD < 30) return `Il y a ${diffD}j`;
+  return `Il y a ${Math.floor(diffD / 30)} mois`;
+}
+
+interface OfferCardProps {
+  offer: IOffer;
+}
+
+export function OfferCard({ offer }: OfferCardProps) {
+  return (
+    <Link href={`/offers/${offer.id}`}>
+      <Card className="h-full transition-shadow hover:shadow-md cursor-pointer">
+        <CardHeader className="pb-2">
+          <div className="flex items-center gap-2 mb-1 flex-wrap">
+            <Badge className={OFFER_TYPE_COLORS[offer.type]}>
+              {OFFER_TYPE_LABELS[offer.type]}
+            </Badge>
+            {offer.category && (
+              <Badge variant="outline">
+                {CATEGORY_LABELS[offer.category]}
+              </Badge>
+            )}
+          </div>
+          <CardTitle className="text-base line-clamp-2">
+            {offer.title}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <p className="text-sm text-muted-foreground line-clamp-2">
+            {offer.description}
+          </p>
+          <div className="flex items-center justify-between text-xs text-muted-foreground">
+            <span>{offer.creator?.displayName}</span>
+            <span>{timeAgo(offer.createdAt)}</span>
+          </div>
+        </CardContent>
+      </Card>
+    </Link>
+  );
+}

@@ -1,0 +1,30 @@
+import { registerAs } from '@nestjs/config';
+import { TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { join } from 'path';
+
+export default registerAs(
+  'database',
+  (): TypeOrmModuleOptions => {
+    const dbType = process.env.DB_TYPE || 'sqlite';
+
+    if (dbType === 'postgres') {
+      return {
+        type: 'postgres',
+        host: process.env.DB_HOST || 'localhost',
+        port: parseInt(process.env.DB_PORT || '5432', 10),
+        username: process.env.DB_USERNAME || 'gr_user',
+        password: process.env.DB_PASSWORD || 'gr_password',
+        database: process.env.DB_DATABASE || 'gr_attitude',
+        autoLoadEntities: true,
+        synchronize: true,
+      };
+    }
+
+    return {
+      type: 'better-sqlite3',
+      database: join(process.cwd(), 'gr_attitude.sqlite'),
+      autoLoadEntities: true,
+      synchronize: true,
+    };
+  },
+);

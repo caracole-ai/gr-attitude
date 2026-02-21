@@ -1,0 +1,75 @@
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  ManyToOne,
+  OneToMany,
+  JoinColumn,
+} from 'typeorm';
+import {
+  MissionCategory,
+  OfferType,
+  OfferStatus,
+  Visibility,
+} from '../../shared/enums.js';
+import { User } from '../../users/entities/user.entity.js';
+import { Correlation } from '../../correlations/entities/correlation.entity.js';
+
+@Entity('offers')
+export class Offer {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
+
+  @Column({ type: 'uuid' })
+  creatorId: string;
+
+  @Column({ type: 'varchar', length: 120 })
+  title: string;
+
+  @Column({ type: 'text' })
+  description: string;
+
+  @Column({ type: 'enum', enum: MissionCategory })
+  category: MissionCategory;
+
+  @Column({ type: 'enum', enum: OfferType })
+  offerType: OfferType;
+
+  @Column({ type: 'enum', enum: Visibility, default: Visibility.PUBLIC })
+  visibility: Visibility;
+
+  @Column({ type: 'float', nullable: true })
+  locationLat: number | null;
+
+  @Column({ type: 'float', nullable: true })
+  locationLng: number | null;
+
+  @Column({ type: 'int', default: 10 })
+  locationRadiusKm: number;
+
+  @Column({ type: 'enum', enum: OfferStatus, default: OfferStatus.OUVERTE })
+  status: OfferStatus;
+
+  @Column('simple-array')
+  tags: string[];
+
+  @Column({ type: 'text', nullable: true })
+  availability: string | null;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @Column({ type: 'timestamp' })
+  expiresAt: Date;
+
+  @Column({ type: 'timestamp', nullable: true })
+  closedAt: Date | null;
+
+  @ManyToOne(() => User, (user) => user.offers)
+  @JoinColumn({ name: 'creatorId' })
+  creator: User;
+
+  @OneToMany(() => Correlation, (correlation) => correlation.offer)
+  correlations: Correlation[];
+}

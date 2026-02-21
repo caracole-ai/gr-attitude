@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "Bash(cd:*)",
+      "Bash(tail:*)",
+      "Bash(head:*)",
+      "Bash(echo EXIT: $?:*)",
+      "Bash(cd /c/Users/lione/OneDrive/Bureau/CODINGSTUFFS/manolo/frontend && npx tsc --noEmit 2>&1)",
+      "Bash(cd /c/Users/lione/OneDrive/Bureau/CODINGSTUFFS/manolo && docker compose up -d 2>&1)",
+      "Bash(echo Docker not found in PATH:*)",
+      "Bash(echo psql not found:*)",
+      "Bash(true:*)",
+      "Bash(cd /c/Users/lione/OneDrive/Bureau/CODINGSTUFFS/manolo/backend && npm run build 2>&1 && ls dist/main* 2>&1)",
+      "Bash(cd /c/Users/lione/OneDrive/Bureau/CODINGSTUFFS/manolo/backend && rm -rf dist && npm run build 2>&1 && ls dist/main.js 2>&1)",
+      "mcp__chrome-devtools__navigate_page",
+      "mcp__chrome-devtools__take_screenshot",
+      "Bash(where.exe winget:*)",
+      "Bash(where.exe choco:*)",
+      "Bash(winget install:*)",
+      "Bash(wsl.exe:*)",
+      "Bash(where.exe docker:*)",
+      "Bash(echo no pg tools:*)"
+    ]
+  }
+}
