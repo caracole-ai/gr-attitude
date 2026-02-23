@@ -37,17 +37,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const token = getToken();
-    if (token) {
-      authApi
-        .getMe()
-        .then(setUser)
-        .catch(() => {
+    
+    const initializeAuth = async () => {
+      if (token) {
+        try {
+          const currentUser = await authApi.getMe();
+          setUser(currentUser);
+        } catch {
           removeToken();
-        })
-        .finally(() => setIsLoading(false));
-    } else {
+        }
+      }
       setIsLoading(false);
-    }
+    };
+
+    initializeAuth();
   }, []);
 
   const login = useCallback(async (data: ILoginRequest) => {
