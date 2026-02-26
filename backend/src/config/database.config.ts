@@ -17,7 +17,7 @@ export default registerAs('database', (): TypeOrmModuleOptions => {
           ? { rejectUnauthorized: false }
           : false,
         autoLoadEntities: true,
-        synchronize: !isProduction,
+        synchronize: true, // Force synchronize for POC
       };
     }
 
@@ -29,7 +29,7 @@ export default registerAs('database', (): TypeOrmModuleOptions => {
       password: process.env.DB_PASSWORD || 'gr_password',
       database: process.env.DB_DATABASE || 'gr_attitude',
       autoLoadEntities: true,
-      synchronize: !isProduction,
+      synchronize: true, // Force synchronize for POC
     };
   }
 
@@ -37,6 +37,6 @@ export default registerAs('database', (): TypeOrmModuleOptions => {
     type: 'better-sqlite3',
     database: join(process.cwd(), 'gr_attitude.sqlite'),
     autoLoadEntities: true,
-    synchronize: !isProduction,
+    synchronize: true, // Force synchronize for POC
   };
 });
