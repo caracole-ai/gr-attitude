@@ -165,6 +165,9 @@ export class MissionsService {
     if (mission.creatorId !== userId) {
       throw new ForbiddenException('Only the creator can close this mission');
     }
+    if (mission.status === MissionStatus.RESOLUE) {
+      throw new ForbiddenException('Mission is already closed');
+    }
 
     await this.missionsRepository.update(id, {
       status: MissionStatus.RESOLUE,

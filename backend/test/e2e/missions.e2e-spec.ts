@@ -26,14 +26,15 @@ describe('Missions (e2e)', () => {
     title: "Besoin d'aide pour déménagement",
     description:
       "Je cherche 2 personnes pour m'aider à déménager ce week-end. Camion fourni.",
-    category: MissionCategory.AIDE_A_LA_PERSONNE,
-    helpType: HelpType.PHYSICAL,
-    urgency: Urgency.MEDIUM,
+    category: MissionCategory.DEMENAGEMENT,
+    helpType: HelpType.MATERIEL,
+    urgency: Urgency.MOYEN,
     visibility: Visibility.PUBLIC,
     locationLat: 48.8566,
     locationLng: 2.3522,
     locationRadiusKm: 5,
     tags: ['déménagement', 'transport'],
+    expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
   };
 
   beforeAll(async () => {
@@ -58,16 +59,8 @@ describe('Missions (e2e)', () => {
       .post('/auth/register')
       .send(testUser);
 
-    userId = registerRes.body.id;
-
-    const loginRes = await request(app.getHttpServer())
-      .post('/auth/login')
-      .send({
-        email: testUser.email,
-        password: testUser.password,
-      });
-
-    accessToken = loginRes.body.accessToken;
+    userId = registerRes.body.user.id;
+    accessToken = registerRes.body.accessToken;
   });
 
   afterAll(async () => {
@@ -99,7 +92,7 @@ describe('Missions (e2e)', () => {
           expect(res.body).toHaveProperty('helpType', testMission.helpType);
           expect(res.body).toHaveProperty('urgency', testMission.urgency);
           expect(res.body).toHaveProperty('visibility', testMission.visibility);
-          expect(res.body).toHaveProperty('status', 'open');
+          expect(res.body).toHaveProperty('status', 'ouverte');
           expect(res.body).toHaveProperty('creatorId', userId);
           missionId = res.body.id;
         });
@@ -156,9 +149,10 @@ describe('Missions (e2e)', () => {
         .get('/missions')
         .expect(200)
         .expect((res) => {
-          expect(Array.isArray(res.body)).toBe(true);
-          expect(res.body.length).toBeGreaterThan(0);
-          const mission = res.body.find((m: any) => m.id === missionId);
+          expect(res.body).toHaveProperty('data');
+          expect(Array.isArray(res.body.data)).toBe(true);
+          expect(res.body.data.length).toBeGreaterThan(0);
+          const mission = res.body.data.find((m: any) => m.id === missionId);
           expect(mission).toBeDefined();
         });
     });
@@ -166,12 +160,13 @@ describe('Missions (e2e)', () => {
     it('should filter missions by category', () => {
       return request(app.getHttpServer())
         .get('/missions')
-        .query({ category: MissionCategory.AIDE_A_LA_PERSONNE })
+        .query({ category: MissionCategory.DEMENAGEMENT })
         .expect(200)
         .expect((res) => {
-          expect(Array.isArray(res.body)).toBe(true);
-          res.body.forEach((mission: any) => {
-            expect(mission.category).toBe(MissionCategory.AIDE_A_LA_PERSONNE);
+          expect(res.body).toHaveProperty('data');
+          expect(Array.isArray(res.body.data)).toBe(true);
+          res.body.data.forEach((mission: any) => {
+            expect(mission.category).toBe(MissionCategory.DEMENAGEMENT);
           });
         });
     });
@@ -179,12 +174,13 @@ describe('Missions (e2e)', () => {
     it('should filter missions by urgency', () => {
       return request(app.getHttpServer())
         .get('/missions')
-        .query({ urgency: Urgency.MEDIUM })
+        .query({ urgency: Urgency.MOYEN })
         .expect(200)
         .expect((res) => {
-          expect(Array.isArray(res.body)).toBe(true);
-          res.body.forEach((mission: any) => {
-            expect(mission.urgency).toBe(Urgency.MEDIUM);
+          expect(res.body).toHaveProperty('data');
+          expect(Array.isArray(res.body.data)).toBe(true);
+          res.body.data.forEach((mission: any) => {
+            expect(mission.urgency).toBe(Urgency.MOYEN);
           });
         });
     });
@@ -192,12 +188,13 @@ describe('Missions (e2e)', () => {
     it('should filter missions by status', () => {
       return request(app.getHttpServer())
         .get('/missions')
-        .query({ status: 'open' })
+        .query({ status: 'ouverte' })
         .expect(200)
         .expect((res) => {
-          expect(Array.isArray(res.body)).toBe(true);
-          res.body.forEach((mission: any) => {
-            expect(mission.status).toBe('open');
+          expect(res.body).toHaveProperty('data');
+          expect(Array.isArray(res.body.data)).toBe(true);
+          res.body.data.forEach((mission: any) => {
+            expect(mission.status).toBe('ouverte');
           });
         });
     });
@@ -280,7 +277,7 @@ describe('Missions (e2e)', () => {
     it('should reject close without JWT', () => {
       return request(app.getHttpServer())
         .post(`/missions/${missionId}/close`)
-        .send({ summary: 'Mission completed successfully' })
+        .send({ closureFeedback: 'Mission completed successfully' })
         .expect(401);
     });
 
@@ -289,13 +286,14 @@ describe('Missions (e2e)', () => {
         .post(`/missions/${missionId}/close`)
         .set('Authorization', `Bearer ${accessToken}`)
         .send({
-          summary: 'Déménagement réussi avec 2 bénévoles. Merci beaucoup!',
+          closureFeedback: 'Déménagement réussi avec 2 bénévoles',
+          closureThanks: 'Merci beaucoup!',
         })
         .expect(201)
         .expect((res) => {
-          expect(res.body).toHaveProperty('status', 'closed');
+          expect(res.body).toHaveProperty('status', 'resolue');
           expect(res.body).toHaveProperty('closedAt');
-          expect(res.body).toHaveProperty('closureSummary');
+          expect(res.body).toHaveProperty('closureFeedback');
         });
     });
 
@@ -304,9 +302,9 @@ describe('Missions (e2e)', () => {
         .post(`/missions/${missionId}/close`)
         .set('Authorization', `Bearer ${accessToken}`)
         .send({
-          summary: 'Trying to close again',
+          closureFeedback: 'Trying to close again',
         })
-        .expect(400); // Should return bad request or conflict
+        .expect(403); // Forbidden (mission already closed)
     });
   });
 });

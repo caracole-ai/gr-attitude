@@ -6,6 +6,7 @@ import {
   IsArray,
   MinLength,
   MaxLength,
+  IsDateString,
 } from 'class-validator';
 import {
   MissionCategory,
@@ -53,4 +54,7 @@ export class CreateMissionDto {
   @IsArray()
   @IsString({ each: true })
   tags?: string[];
+
+  @IsDateString()
+  expiresAt: string;
 }
