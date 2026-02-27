@@ -28,18 +28,18 @@ interface SearchFiltersProps {
 
 export function SearchFilters({ onSearch, onReset }: SearchFiltersProps) {
   const [q, setQ] = useState('');
-  const [category, setCategory] = useState<string>('');
-  const [urgency, setUrgency] = useState<string>('');
-  const [status, setStatus] = useState<string>('');
+  const [category, setCategory] = useState<string>('all');
+  const [urgency, setUrgency] = useState<string>('all');
+  const [status, setStatus] = useState<string>('all');
   const [sortBy, setSortBy] = useState<string>('createdAt');
   const [sortOrder, setSortOrder] = useState<string>('DESC');
 
   const handleSearch = () => {
     onSearch({
       q: q || undefined,
-      category: category || undefined,
-      urgency: urgency || undefined,
-      status: status || undefined,
+      category: category !== 'all' ? category : undefined,
+      urgency: urgency !== 'all' ? urgency : undefined,
+      status: status !== 'all' ? status : undefined,
       sortBy,
       sortOrder,
     });
@@ -47,9 +47,9 @@ export function SearchFilters({ onSearch, onReset }: SearchFiltersProps) {
 
   const handleReset = () => {
     setQ('');
-    setCategory('');
-    setUrgency('');
-    setStatus('');
+    setCategory('all');
+    setUrgency('all');
+    setStatus('all');
     setSortBy('createdAt');
     setSortOrder('DESC');
     onReset();
@@ -84,7 +84,7 @@ export function SearchFilters({ onSearch, onReset }: SearchFiltersProps) {
               <SelectValue placeholder="Toutes" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Toutes</SelectItem>
+              <SelectItem value="all">Toutes</SelectItem>
               <SelectItem value="demenagement">Déménagement</SelectItem>
               <SelectItem value="bricolage">Bricolage</SelectItem>
               <SelectItem value="numerique">Numérique</SelectItem>
@@ -109,7 +109,7 @@ export function SearchFilters({ onSearch, onReset }: SearchFiltersProps) {
               <SelectValue placeholder="Toutes" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Toutes</SelectItem>
+              <SelectItem value="all">Toutes</SelectItem>
               <SelectItem value="faible">Faible</SelectItem>
               <SelectItem value="moyen">Moyen</SelectItem>
               <SelectItem value="urgent">Urgent</SelectItem>
@@ -125,7 +125,7 @@ export function SearchFilters({ onSearch, onReset }: SearchFiltersProps) {
               <SelectValue placeholder="Tous" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Tous</SelectItem>
+              <SelectItem value="all">Tous</SelectItem>
               <SelectItem value="ouverte">Ouverte</SelectItem>
               <SelectItem value="en_cours">En cours</SelectItem>
               <SelectItem value="resolue">Résolue</SelectItem>
