@@ -6,49 +6,62 @@ import {
   HttpStatus,
   Logger,
 } from '@nestjs/common';
-import type { Response } from 'express';
+import { Request, Response } from 'express';
 
 @Catch()
 export class HttpExceptionFilter implements ExceptionFilter {
-  private readonly logger = new Logger('HttpException');
+  private readonly logger = new Logger(HttpExceptionFilter.name);
 
   catch(exception: unknown, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
+    const request = ctx.getRequest<Request>();
 
+    // Determine status code
     const status =
       exception instanceof HttpException
         ? exception.getStatus()
         : HttpStatus.INTERNAL_SERVER_ERROR;
 
-    let message: string;
+    // Extract error message
+    let message = 'Internal server error';
+    let errors: string[] | undefined;
+
     if (exception instanceof HttpException) {
-      const exResponse = exception.getResponse();
-      message =
-        typeof exResponse === 'object' &&
-        exResponse !== null &&
-        'message' in exResponse
-          ? Array.isArray((exResponse as any).message)
-            ? (exResponse as any).message.join(', ')
-            : String((exResponse as any).message)
-          : exception.message;
-    } else {
-      message = 'Internal server error';
+      const exceptionResponse = exception.getResponse();
+      
+      if (typeof exceptionResponse === 'string') {
+        message = exceptionResponse;
+      } else if (typeof exceptionResponse === 'object' && exceptionResponse !== null) {
+        const resp = exceptionResponse as any;
+        message = resp.message || message;
+        errors = Array.isArray(resp.message) ? resp.message : undefined;
+      }
+    } else if (exception instanceof Error) {
+      message = exception.message;
     }
 
-    // Never leak internal details on 5xx
-    if (status >= 500) {
-      this.logger.error(
-        `${status} Internal Error`,
-        exception instanceof Error ? exception.stack : String(exception),
-      );
-      message = 'Internal server error';
-    }
-
-    response.status(status).json({
+    // Structured error response
+    const errorResponse = {
       statusCode: status,
       message,
+      ...(errors && { errors }),
       timestamp: new Date().toISOString(),
-    });
+      path: request.url,
+    };
+
+    // Log error (exclude 4xx client errors from error logs)
+    if (status >= 500) {
+      this.logger.error(
+        `${request.method} ${request.url} - ${status}`,
+        exception instanceof Error ? exception.stack : JSON.stringify(exception),
+      );
+    } else {
+      this.logger.warn(
+        `${request.method} ${request.url} - ${status}: ${message}`,
+      );
+    }
+
+    response.status(status).json(errorResponse);
   }
 }
