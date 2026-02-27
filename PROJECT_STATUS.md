@@ -1,11 +1,11 @@
 # GR-Attitude — Project Status
 
-> **Last updated:** 2026-02-27 19:01 GMT+1  
-> **Last commit:** `1b3962d` - test: implement frontend unit tests with Vitest
+> **Last updated:** 2026-02-27 20:55 GMT+1  
+> **Last commit:** En cours - feat: database indexing + data seeding
 
 ---
 
-## 🎯 Current State: **Production-Ready + High Coverage** ✅
+## 🎯 Current State: **Production-Ready + Test Coverage + Demo Data** ✅
 
 ### ✅ Completed Features
 
@@ -438,7 +438,7 @@ _Rien en cours._
 
 **Status:** ✅ Complete
 
-**Commit:** (pending)
+**Commit:** `2e239f4`
 
 **Implementation:**
 - ✅ Migration `AddPerformanceIndexes` created with 13 indexes
@@ -487,8 +487,92 @@ SELECT * FROM contributions WHERE missionId = 1;
 
 **Impact:** 10-100x faster queries, production-ready performance ✅
 
-**Next steps (Priority 4B):**
-- Task 3/3: Data seeding (50+ missions, 30+ offers, realistic profiles)
+---
+
+#### 17. Data Seeding — Priority 4B (2026-02-27)
+
+**Status:** ✅ Complete
+
+**Commit:** (pending)
+
+**Implementation:**
+- ✅ SQL seed script `seed-demo.sql` created (15 KB)
+- ✅ npm scripts for easy seeding (`npm run seed:demo`, `seed:reset`, `seed:full`)
+- ✅ Documentation: `SEEDING.md` (complete seeding guide with examples)
+
+**Data seeded:**
+- **20 users** — Realistic French profiles, skills, interests
+  - Password: `Demo123!` (bcrypt hashed)
+  - Avatars: Pravatar.cc images (numbered 1-20)
+  - Locations: French cities (Paris, Lyon, Marseille, Strasbourg, Nice)
+  - Skills: JavaScript, Plomberie, Cuisine, TypeScript, Marketing, Électricité, Design, Informatique, Couture, Mécanique, etc.
+- **55 missions** — Exceeds 50+ requirement ✅
+  - **Urgentes (5):** Déménagement urgent, fuite eau, garde enfant malade, voiture panne, traduction urgent
+  - **Moyennes (30):** Cours informatique, garde enfants, covoiturage, jardinage, guitare, CV, montage Ikea, démarches admin, réparation vélo, etc.
+  - **Faibles (20):** Conversation anglais, photographie, yoga, jogging, échange garde, cuisine végétarienne, troc vêtements, échecs, poterie, musées, etc.
+  - All statuses: `ouverte` (100%)
+  - Urgencies: urgent (5), moyen (30), faible (20)
+  - Expiration: +1 to +180 days (varying dates)
+- **35 offers** — Exceeds 30+ requirement ✅
+  - Types: service (31), materiel (4)
+  - Categories: Bricolage (5), Éducation (5), Numérique (4), Transport/Déménagement (4), Alimentation (3), Loisirs créatifs (5), Musique (2), Jardinage (3), Animaux (2), Bien-être/Sport (2)
+  - Expiration: +90 to +180 days
+  - Examples: Travaux électriques, Plomberie, Cours français FLE, Dépannage informatique, Camionnette déménagement, Cours cuisine végétarienne, Cours guitare, Conseils jardinage, Garde animaux, Cours yoga, Coaching running, Prêt outils
+- **10 contributions** — Realistic volunteer messages with availability
+- **47 correlations** — Mission-offer matches (scores 70-98)
+
+**Scripts:**
+```bash
+# Load demo data (recommended)
+npm run seed:demo
+
+# Or directly with SQLite
+sqlite3 gr_attitude.sqlite < seed-demo.sql
+
+# Reset all data
+npm run seed:reset
+
+# Reset + load
+npm run seed:full
+```
+
+**Verification:**
+```bash
+sqlite3 gr_attitude.sqlite "
+  SELECT COUNT(*) as users FROM users;
+  SELECT COUNT(*) as missions FROM missions;
+  SELECT COUNT(*) as offers FROM offers;
+  SELECT COUNT(*) as contributions FROM contributions;
+  SELECT COUNT(*) as correlations FROM correlations;
+"
+# Expected: 20, 55, 35, 10, 47
+```
+
+**Testing:**
+- ✅ All data loaded successfully without errors
+- ✅ Foreign keys respected (users → missions → contributions → correlations)
+- ✅ Realistic French content (names, descriptions, locations, skills)
+- ✅ Login works with all demo users: `marie.dubois@email.fr` / `Demo123!`
+- ✅ Correlations provide realistic matches for UI testing
+
+**Impact:** Full realistic dataset for development, testing, demos, and screenshots ✅
+
+**Documentation:**
+- `backend/SEEDING.md` — Complete guide (3 KB, usage examples, user accounts, categories)
+- `backend/seed-demo.sql` — SQL seed script (15 KB)
+
+---
+
+## ✅ Priority 4B Complete
+
+**Tasks completed (2026-02-27):**
+1. ✅ Frontend unit tests (Vitest + RTL) — 109 tests, 93% coverage (commit `1b3962d`)
+2. ✅ Database performance indexing — 13 indexes, 10-100x faster queries (commit `2e239f4`)
+3. ✅ Data seeding — 20 users, 55 missions, 35 offers (commit pending)
+2. ✅ Database performance indexing — 13 indexes, 10-100x faster
+3. ✅ Data seeding — 55 missions, 35 offers, 20 users
+
+**All audit short-term recommendations implemented** 🎉
 
 ---
 

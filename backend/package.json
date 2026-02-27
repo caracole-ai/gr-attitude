@@ -19,7 +19,9 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "test:rate-limits": "bash scripts/test-rate-limits.sh",
-    "seed": "ts-node -r tsconfig-paths/register src/seeds/seed.ts",
+    "seed:demo": "sqlite3 gr_attitude.sqlite < seed-demo.sql",
+    "seed:reset": "sqlite3 gr_attitude.sqlite \"DELETE FROM correlations; DELETE FROM contributions; DELETE FROM offers; DELETE FROM missions; DELETE FROM users;\"",
+    "seed:full": "npm run seed:reset && npm run seed:demo",
     "migration:generate": "typeorm-ts-node-commonjs migration:generate -d src/data-source.ts",
     "migration:run": "typeorm-ts-node-commonjs migration:run -d src/data-source.ts",
     "migration:revert": "typeorm-ts-node-commonjs migration:revert -d src/data-source.ts"
@@ -57,6 +59,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",
     "@eslint/js": "^9.18.0",
+    "@faker-js/faker": "^10.3.0",
     "@nestjs/cli": "^11.0.0",
     "@nestjs/schematics": "^11.0.0",
     "@nestjs/testing": "^11.0.1",
