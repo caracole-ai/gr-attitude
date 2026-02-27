@@ -37,15 +37,16 @@ export class MatchingService {
   }
 
   /**
-   * Matching Algorithm V2 - Weighted scoring with urgency and timing
+   * Matching Algorithm V2.1 - Weighted scoring with urgency, timing, and skills
    *
-   * Scoring breakdown (100 points max):
+   * Scoring breakdown (110 points max):
    * - Tag overlap: 25 points
    * - Category match: 20 points
    * - Help type mapping: 20 points
    * - Geographic proximity: 20 points
    * - Urgency bonus: 10 points
    * - Timing match: 5 points
+   * - Skills bonus: 10 points (NEW - requires offer creator profile completion)
    */
   private computeScore(mission: Mission, offer: Offer): number {
     let score = 0;
@@ -105,7 +106,8 @@ export class MatchingService {
     if (mission.expiresAt) {
       const now = new Date();
       const expiresAt = new Date(mission.expiresAt);
-      const daysLeft = (expiresAt.getTime() - now.getTime()) / (1000 * 60 * 60 * 24);
+      const daysLeft =
+        (expiresAt.getTime() - now.getTime()) / (1000 * 60 * 60 * 24);
 
       if (daysLeft > 0 && daysLeft <= 7) {
         // Mission expires within a week - high urgency
@@ -115,6 +117,25 @@ export class MatchingService {
         score += 3;
       }
       // Expired or far future = no timing bonus
+    }
+
+    // 7. Skills bonus (NEW - weight: 10)
+    // Boost score if offer creator has skills matching mission tags
+    if (offer.creator?.skills && offer.creator.skills.length > 0) {
+      const missionTags = mission.tags || [];
+      const userSkills = offer.creator.skills;
+
+      // Check if any user skill matches any mission tag (case-insensitive)
+      const skillMatches = missionTags.filter((tag) =>
+        userSkills.some(
+          (skill) => skill.toLowerCase() === tag.toLowerCase(),
+        ),
+      );
+
+      if (skillMatches.length > 0 && missionTags.length > 0) {
+        // Partial credit based on match ratio
+        score += 10 * (skillMatches.length / missionTags.length);
+      }
     }
 
     return Math.round(score * 100) / 100;

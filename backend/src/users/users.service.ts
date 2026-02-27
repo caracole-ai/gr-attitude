@@ -7,6 +7,7 @@ import { Contribution } from '../contributions/entities/contribution.entity';
 import { Offer } from '../offers/entities/offer.entity';
 import { Notification } from '../notifications/entities/notification.entity';
 import { MissionStatus } from '../shared/enums';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 
 @Injectable()
 export class UsersService {
@@ -133,5 +134,35 @@ export class UsersService {
       contributionsGiven,
       offersCreated,
     };
+  }
+
+  async updateProfile(
+    userId: string,
+    dto: UpdateProfileDto,
+  ): Promise<User | null> {
+    await this.usersRepository.update(userId, dto);
+    return this.findOne(userId);
+  }
+
+  /**
+   * Calculate profile completion percentage
+   * Optional fields: bio, skills, interests, availabilityHours, location, preferences
+   */
+  getProfileCompletion(user: User): number {
+    const fields = [
+      user.bio,
+      user.skills?.length,
+      user.interests?.length,
+      user.availabilityHours,
+      user.locationLat && user.locationLng,
+      user.maxDistanceKm,
+      user.preferredCategories?.length,
+      user.preferredUrgencies?.length,
+    ];
+
+    const completed = fields.filter((field) => Boolean(field)).length;
+    const total = fields.length;
+
+    return Math.round((completed / total) * 100);
   }
 }

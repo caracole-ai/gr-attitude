@@ -43,6 +43,29 @@ export class User {
   @Column({ type: 'boolean', default: false })
   isPremium: boolean;
 
+  // Profile completion fields
+  @Column({ type: 'simple-array', nullable: true })
+  skills: string[] | null;
+
+  @Column({ type: 'simple-array', nullable: true })
+  interests: string[] | null;
+
+  @Column({ type: 'text', nullable: true })
+  bio: string | null;
+
+  @Column({ type: 'int', nullable: true })
+  availabilityHours: number | null;
+
+  // Matching preferences
+  @Column({ type: 'int', nullable: true, default: 50 })
+  maxDistanceKm: number | null;
+
+  @Column({ type: 'simple-array', nullable: true })
+  preferredCategories: string[] | null;
+
+  @Column({ type: 'simple-array', nullable: true })
+  preferredUrgencies: string[] | null;
+
   @CreateDateColumn()
   createdAt: Date;
 

@@ -12,6 +12,7 @@ import { UsersService } from './users.service';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 
 @Controller('users')
 export class UsersController {
@@ -76,5 +77,39 @@ export class UsersController {
   @Get('me/stats')
   getStats(@CurrentUser() currentUser: { id: string }) {
     return this.usersService.getUserStats(currentUser.id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch('me/profile')
+  async updateProfile(
+    @CurrentUser() currentUser: { id: string },
+    @Body() dto: UpdateProfileDto,
+  ) {
+    const user = await this.usersService.updateProfile(currentUser.id, dto);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    // Calculate profile completion percentage
+    const profileCompletion = this.usersService.getProfileCompletion(user);
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { passwordHash, oauthProviderId, ...result } = user;
+    return {
+      ...result,
+      profileCompletion,
+    };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('me/profile-completion')
+  async getProfileCompletion(@CurrentUser() currentUser: { id: string }) {
+    const user = await this.usersService.findOne(currentUser.id);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    return {
+      profileCompletion: this.usersService.getProfileCompletion(user),
+    };
   }
 }
