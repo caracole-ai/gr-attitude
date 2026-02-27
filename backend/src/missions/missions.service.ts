@@ -2,6 +2,8 @@ import {
   Injectable,
   NotFoundException,
   ForbiddenException,
+  Inject,
+  forwardRef,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -19,6 +21,7 @@ import { CreateMissionDto } from './dto/create-mission.dto';
 import { UpdateMissionDto } from './dto/update-mission.dto';
 import { CloseMissionDto } from './dto/close-mission.dto';
 import { MissionFiltersDto } from './dto/mission-filters.dto';
+import { EventsGateway } from '../events/events.gateway';
 
 @Injectable()
 export class MissionsService {
@@ -31,6 +34,8 @@ export class MissionsService {
     private readonly correlationsRepository: Repository<Correlation>,
     @InjectRepository(Notification)
     private readonly notificationsRepository: Repository<Notification>,
+    @Inject(forwardRef(() => EventsGateway))
+    private readonly eventsGateway: EventsGateway,
   ) {}
 
   async findAll(filters: MissionFiltersDto) {
@@ -130,7 +135,16 @@ export class MissionsService {
       tags: dto.tags || [],
       expiresAt,
     });
-    return this.missionsRepository.save(mission);
+    const savedMission = await this.missionsRepository.save(mission);
+
+    // Notify creator via WebSocket
+    this.eventsGateway.sendToUser(userId, 'mission:created', {
+      type: 'mission_created',
+      missionId: savedMission.id,
+      missionTitle: savedMission.title,
+    });
+
+    return savedMission;
   }
 
   async update(
@@ -192,6 +206,14 @@ export class MissionsService {
       });
       await this.notificationsRepository.save(notification);
 
+      // Send real-time WebSocket notification
+      this.eventsGateway.sendToUser(contrib.userId, 'mission:closed', {
+        type: 'mission_closed',
+        missionId: id,
+        missionTitle: mission.title,
+        closureThanks: dto.closureThanks || null,
+      });
+
       // Send additional THANKS_RECEIVED notification if creator wrote a thanks message
       if (dto.closureThanks) {
         const thanksNotification = this.notificationsRepository.create({
@@ -203,6 +225,14 @@ export class MissionsService {
           referenceId: id,
         });
         await this.notificationsRepository.save(thanksNotification);
+
+        // Send real-time WebSocket notification for thanks
+        this.eventsGateway.sendToUser(contrib.userId, 'thanks:received', {
+          type: 'thanks_received',
+          missionId: id,
+          missionTitle: mission.title,
+          message: dto.closureThanks,
+        });
       }
     }
 

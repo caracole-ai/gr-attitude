@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject, forwardRef } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Mission } from '../missions/entities/mission.entity';
@@ -11,6 +11,7 @@ import {
   OfferType,
   Urgency,
 } from '../shared/enums';
+import { EventsGateway } from '../events/events.gateway';
 
 @Injectable()
 export class MatchingService {
@@ -21,6 +22,8 @@ export class MatchingService {
     private readonly offersRepository: Repository<Offer>,
     @InjectRepository(Correlation)
     private readonly correlationsRepository: Repository<Correlation>,
+    @Inject(forwardRef(() => EventsGateway))
+    private readonly eventsGateway: EventsGateway,
   ) {}
 
   private helpTypeToOfferType(helpType: HelpType): OfferType[] {
@@ -146,6 +149,7 @@ export class MatchingService {
 
     const offers = await this.offersRepository.find({
       where: { status: OfferStatus.OUVERTE },
+      relations: ['creator'],
     });
 
     const results: Correlation[] = [];
@@ -170,6 +174,20 @@ export class MatchingService {
           }),
         );
         results.push(correlation);
+
+        // Notify offer creator about new match
+        this.eventsGateway.sendToUser(offer.creatorId, 'match:new', {
+          type: 'match',
+          missionId: mission.id,
+          offerId: offer.id,
+          score,
+          mission: {
+            id: mission.id,
+            title: mission.title,
+            category: mission.category,
+            urgency: mission.urgency,
+          },
+        });
       }
     }
 

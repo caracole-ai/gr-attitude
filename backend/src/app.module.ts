@@ -14,6 +14,7 @@ import { CorrelationsModule } from './correlations/correlations.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { MatchingModule } from './matching/matching.module';
 import { CronsModule } from './crons/crons.module';
+import { EventsModule } from './events/events.module';
 import { AppController } from './app.controller';
 
 @Module({
@@ -45,6 +46,7 @@ import { AppController } from './app.controller';
     NotificationsModule,
     MatchingModule,
     CronsModule,
+    EventsModule,
   ],
   controllers: [AppController],
 })

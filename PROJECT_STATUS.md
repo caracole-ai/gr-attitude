@@ -174,12 +174,48 @@ _Rien en cours._
 
 ---
 
+#### 7. Real-time Notifications (WebSocket) (2026-02-27)
+
+**Status:** ✅ Complete
+
+**Commit:** (pending)
+
+**Implementation:**
+- ✅ Socket.io installed and configured (backend + frontend)
+- ✅ EventsGateway created (JWT auth, connection tracking)
+- ✅ EventsModule integrated in app
+- ✅ Real-time events implemented:
+  - `match:new` — Notify when new match found
+  - `mission:created` — Confirm mission creation
+  - `mission:closed` — Notify contributors when mission resolved
+  - `contribution:new` — Alert mission creator
+  - `thanks:received` — Show thanks messages
+- ✅ Frontend hooks: `useSocket`, `useSocketEvent`, `useSocketAuth`
+- ✅ SocketProvider auto-connects and shows toast notifications
+- ✅ Multi-device support (one user, multiple sockets)
+- ✅ Documentation: `WEBSOCKET.md` (full guide)
+
+**Services updated:**
+- MissionsService: Emit events on create/close
+- MatchingService: Notify on new match
+- ContributionsService: Alert on new contribution
+
+**Testing:**
+- Backend started successfully ✅
+- WebSocket gateway functional ✅
+- JWT authentication working ✅
+- Frontend integration complete ✅
+
+**Impact:** Real-time UX, instant notifications, better engagement ✅
+
+---
+
 ## 📋 Backlog
 
 ### High Priority
 - [x] Rate limiting & caching
 - [x] Matching algorithm V2 (scoring pondéré)
-- [ ] Real-time notifications (WebSocket)
+- [x] Real-time notifications (WebSocket)
 - [ ] Add Facebook OAuth (postponed)
 
 ### Medium Priority

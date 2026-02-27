@@ -163,6 +163,35 @@ npm test -- matching.service.spec.ts    # 8 unit tests
 
 ---
 
+## Real-time Notifications (WebSocket)
+
+### Socket.io Integration
+
+GR-attitude uses **Socket.io** for real-time bidirectional communication.
+
+**Events**:
+- `match:new` — New mission-offer match found
+- `mission:created` — Mission published
+- `mission:closed` — Mission resolved
+- `contribution:new` — New contribution on user's mission
+- `thanks:received` — Thanks message from mission creator
+
+**Authentication**: JWT token in handshake (`auth.token`)
+
+**Connection tracking**: `userId → Set<socketId>` (multi-device support)
+
+**Example** (send to user):
+```typescript
+this.eventsGateway.sendToUser(userId, 'match:new', {
+  missionId: mission.id,
+  score: 85,
+});
+```
+
+**Documentation:** See [`WEBSOCKET.md`](./WEBSOCKET.md) for full WebSocket guide.
+
+---
+
 ## Authentication & Session Lifecycle
 
 ### JWT-Based Authentication

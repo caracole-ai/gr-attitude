@@ -2,6 +2,8 @@ import {
   Injectable,
   NotFoundException,
   ForbiddenException,
+  Inject,
+  forwardRef,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -15,6 +17,7 @@ import {
 } from '../shared/enums';
 import { CreateContributionDto } from './dto/create-contribution.dto';
 import { UpdateContributionDto } from './dto/update-contribution.dto';
+import { EventsGateway } from '../events/events.gateway';
 
 @Injectable()
 export class ContributionsService {
@@ -25,6 +28,8 @@ export class ContributionsService {
     private readonly missionsRepository: Repository<Mission>,
     @InjectRepository(Notification)
     private readonly notificationsRepository: Repository<Notification>,
+    @Inject(forwardRef(() => EventsGateway))
+    private readonly eventsGateway: EventsGateway,
   ) {}
 
   findByMission(missionId: string): Promise<Contribution[]> {
@@ -71,6 +76,15 @@ export class ContributionsService {
       referenceId: missionId,
     });
     await this.notificationsRepository.save(notification);
+
+    // Send real-time WebSocket notification
+    this.eventsGateway.sendToUser(mission.creatorId, 'contribution:new', {
+      type: 'new_contribution',
+      missionId,
+      missionTitle: mission.title,
+      contributionType: dto.type,
+      message: dto.message || null,
+    });
 
     return saved;
   }
