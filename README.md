@@ -37,15 +37,26 @@ Accès :
 
 ## 📚 Documentation
 
+### Documentation Produit
 - **[PRD.md](./PRD.md)** — Spécifications produit complètes (607+ lignes)
 - **[CLAUDE.md](./CLAUDE.md)** — Guide technique pour développeurs
+- **[AUDIT-WINSTON-2026-02-23.md](./AUDIT-WINSTON-2026-02-23.md)** — Audit architecture + recommandations
+
+### Documentation Backend ⭐ **UPDATED**
+- **[backend/README.md](./backend/README.md)** — Guide complet backend
+- **[backend/RATE_LIMITING.md](./backend/RATE_LIMITING.md)** — Stratégie rate limiting ⭐ **NEW**
+- **[backend/MATCHING.md](./backend/MATCHING.md)** — Algorithme matching V2 ⭐ **NEW**
+- **[backend/WEBSOCKET.md](./backend/WEBSOCKET.md)** — Guide WebSocket real-time ⭐ **NEW**
+- **[backend/MIGRATIONS.md](./backend/MIGRATIONS.md)** — Guide migrations TypeORM
+- **[backend/ERROR_HANDLING.md](./backend/ERROR_HANDLING.md)** — Gestion erreurs
+
+### Documentation Architecture
 - **[docs/](./docs)** — Documentation technique détaillée
   - [architecture.md](./docs/architecture.md) — Architecture système
   - [api-endpoints.md](./docs/api-endpoints.md) — Endpoints API
   - [auth.md](./docs/auth.md) — Configuration OAuth
   - [database.md](./docs/database.md) — Schéma base de données
   - Et 8 autres fichiers techniques...
-- **[AUDIT-WINSTON-2026-02-23.md](./AUDIT-WINSTON-2026-02-23.md)** — Audit architecture + recommandations
 
 ---
 
@@ -54,9 +65,11 @@ Accès :
 ### Backend
 - **Framework** : NestJS 11.0.1
 - **Langage** : TypeScript 5
-- **Base de données** : SQLite (MVP) → PostgreSQL + PostGIS (production)
+- **Base de données** : SQLite (production) + TypeORM migrations
 - **Auth** : Passport (JWT + OAuth2 Google/Facebook)
-- **Sécurité** : bcrypt, Helmet, Throttler
+- **Sécurité** : bcrypt, Helmet, **Throttler (rate limiting)** ⭐
+- **Real-time** : **Socket.io** (WebSocket notifications) ⭐ **NEW**
+- **Matching** : Algorithme V2 (scoring pondéré 6 facteurs) ⭐ **ENHANCED**
 
 ### Frontend
 - **Framework** : Next.js 16.1.6 + React 19.2.3
@@ -153,32 +166,38 @@ npm run lint
 
 ## 📊 État du projet
 
-**Phase actuelle** : ✅ **Prototype fonctionnel MVP**
+**Phase actuelle** : ✅ **Production-Ready** (2026-02-27)
 
 ### Backend ✅
 - [x] Auth (JWT + OAuth Google/Facebook)
-- [x] CRUD Missions
-- [x] CRUD Offers
-- [x] Contributions (4 types d'engagement)
-- [x] Matching algorithm (corrélation Missions ↔ Offres)
-- [x] Notifications
+- [x] CRUD Missions + Offers + Contributions
+- [x] **Matching V2** (scoring pondéré 6 facteurs + urgency/timing) ⭐ **NEW**
+- [x] **Rate Limiting** (Throttler 5-60 req/min par endpoint) ⭐ **NEW**
+- [x] **WebSocket** (Socket.io real-time notifications) ⭐ **NEW**
+- [x] Notifications (DB + real-time)
 - [x] Crons (expiration, rappels)
-- [ ] Tests e2e
+- [x] **TypeORM migrations** (synchronize:false, migrationsRun:true)
+- [x] **Tests E2E** (51/51 passing ✅) — auth, JWT (12 tests), missions (20 tests)
+- [x] **Tests unitaires** (8 matching tests ✅)
+- [x] Error handling standardized
 - [ ] CI/CD
 
 ### Frontend ✅
-- [x] Pages auth (login, register)
-- [x] Pages missions (liste, détail, création)
+- [x] Pages auth (login, register, callback)
+- [x] Pages missions (liste, détail, création wizard)
 - [x] Pages offers
 - [x] Profile utilisateur
 - [x] Notifications
+- [x] **WebSocket client** (auto-connect, toast, cache invalidation) ⭐ **NEW**
+- [x] **Cache optimisé** (5min stale, 10min cache, no refetch on focus) ⭐ **NEW**
 - [x] 15+ hooks React Query
 - [ ] Tests (Vitest)
 - [ ] Responsive mobile optimisé
 
 ### Infrastructure
 - [x] Docker Compose local
-- [x] Config Render.com
+- [x] **Déployé sur Render.com** (prod running ✅)
+- [x] TypeORM migrations automatiques
 - [ ] CI/CD GitHub Actions
 - [ ] Monitoring (Prometheus/Grafana)
 
@@ -228,5 +247,6 @@ Projet privé — Tous droits réservés.
 
 ---
 
-**Dernière mise à jour** : 2026-02-23  
+**Dernière mise à jour** : 2026-02-27  
+**Version** : Production-Ready (Priorité 2 complete)  
 **Auteur** : Équipe GR attitude
