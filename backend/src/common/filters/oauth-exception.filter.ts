@@ -17,11 +17,13 @@ export class OAuthExceptionFilter implements ExceptionFilter {
       'http://localhost:3000',
     );
 
-    // Log the real error server-side
+    // Log the real error server-side with full details
     this.logger.error(
       'OAuth authentication error',
       exception?.message || exception,
     );
+    console.error('[OAuthExceptionFilter] Exception complète:', exception);
+    console.error('[OAuthExceptionFilter] Stack:', exception?.stack);
 
     // Return a generic message to the user
     const safeMessage = 'OAuth authentication failed';

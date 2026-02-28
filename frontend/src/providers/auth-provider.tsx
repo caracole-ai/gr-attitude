@@ -66,9 +66,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const loginWithToken = useCallback(async (token: string) => {
+    console.log('[AuthProvider] loginWithToken appelé');
     setToken(token);
+    console.log('[AuthProvider] Token sauvegardé, récupération user...');
     const me = await authApi.getMe();
+    console.log('[AuthProvider] User récupéré:', me.email, me.displayName);
     setUser(me);
+    console.log('[AuthProvider] State user mis à jour');
   }, []);
 
   const logout = useCallback(() => {

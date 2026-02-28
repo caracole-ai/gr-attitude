@@ -1,9 +1,9 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
-import { toast } from 'sonner';
+import { useToast } from '@/hooks/use-toast';
 
 // Force dynamic rendering (no prerendering)
 export const dynamic = 'force-dynamic';
@@ -12,7 +12,9 @@ export default function OAuthCallbackPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { loginWithToken } = useAuth();
+  const { toast } = useToast();
   const processed = useRef(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (processed.current) return;
@@ -24,26 +26,50 @@ export default function OAuthCallbackPage() {
     const token = hashParams.get('token');
 
     // Error still comes via query param (not sensitive)
-    const error = searchParams.get('error');
+    const errorParam = searchParams.get('error');
 
     if (token) {
+      console.log('[OAuth] Token reçu, longueur:', token.length);
+      
       // Clean the URL immediately to remove token from history
       window.history.replaceState(null, '', window.location.pathname);
 
       loginWithToken(token)
         .then(() => {
-          toast.success('Connexion reussie !');
-          router.replace('/missions');
+          console.log('[OAuth] Login réussi, redirection...');
+          toast({
+            title: 'Connexion réussie !',
+            description: 'Bienvenue sur GR attitude',
+          });
+          
+          // Petit delay pour laisser le temps au state de se mettre à jour
+          setTimeout(() => {
+            router.replace('/missions');
+          }, 300);
         })
-        .catch(() => {
-          toast.error('Erreur lors de la connexion');
-          router.replace('/login');
+        .catch((err) => {
+          console.error('[OAuth] Erreur login:', err);
+          setError('Erreur lors de la connexion');
+          toast({
+            title: 'Erreur',
+            description: 'Erreur lors de la connexion',
+          });
+          setTimeout(() => {
+            router.replace('/login');
+          }, 1000);
         });
     } else {
-      toast.error(error || 'Erreur lors de la connexion OAuth');
-      router.replace('/login');
+      console.error('[OAuth] Pas de token dans URL');
+      setError(errorParam || 'Erreur lors de la connexion OAuth');
+      toast({
+        title: 'Erreur',
+        description: errorParam || 'Erreur lors de la connexion OAuth',
+      });
+      setTimeout(() => {
+        router.replace('/login');
+      }, 1000);
     }
-  }, [searchParams, loginWithToken, router]);
+  }, [searchParams, loginWithToken, router, toast]);
 
   return (
     <div className="flex min-h-[80vh] items-center justify-center">

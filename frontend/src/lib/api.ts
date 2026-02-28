@@ -40,6 +40,11 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
 async function fetchApi<T>(endpoint: string, options?: RequestInit): Promise<T> {
   const token = getToken();
+  
+  if (!token && endpoint !== '/auth/login' && endpoint !== '/auth/register') {
+    console.warn('[API] Pas de token pour:', endpoint);
+  }
+  
   const res = await fetch(`${API_URL}${endpoint}`, {
     headers: {
       'Content-Type': 'application/json',
@@ -47,8 +52,10 @@ async function fetchApi<T>(endpoint: string, options?: RequestInit): Promise<T> 
     },
     ...options,
   });
+  
   if (!res.ok) {
     const error = await res.json().catch(() => ({ message: 'Erreur serveur' }));
+    console.error('[API] Erreur', res.status, endpoint, ':', error.message);
     throw new Error(error.message || 'Erreur serveur');
   }
   return res.json();

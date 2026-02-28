@@ -70,8 +70,19 @@ export class AuthController {
       'FRONTEND_URL',
       'http://localhost:3000',
     );
-    const { accessToken } = req.user;
-    res.redirect(`${frontendUrl}/callback#token=${accessToken}`);
+    
+    console.log('[GoogleCallback] req.user:', req.user ? 'présent' : 'absent');
+    const { accessToken } = req.user || {};
+    console.log('[GoogleCallback] accessToken:', accessToken ? `présent (${accessToken.substring(0, 20)}...)` : 'absent');
+    
+    if (!accessToken) {
+      console.error('[GoogleCallback] ERREUR: Pas de accessToken!');
+      return res.redirect(`${frontendUrl}/callback?error=no_token`);
+    }
+    
+    const redirectUrl = `${frontendUrl}/callback#token=${accessToken}`;
+    console.log('[GoogleCallback] Redirection vers:', redirectUrl.substring(0, 80) + '...');
+    res.redirect(redirectUrl);
   }
 
   @Get('facebook')
