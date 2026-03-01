@@ -5,6 +5,9 @@ const nextConfig: NextConfig = {
   // Force webpack for compatibility with next-pwa
   webpack: (config) => config,
   
+  // Empty turbopack config to silence Next.js 16 warning (we use webpack)
+  turbopack: {},
+  
   // Disable TypeScript build errors temporarily for deployment
   typescript: {
     ignoreBuildErrors: true,
