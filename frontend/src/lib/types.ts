@@ -79,6 +79,10 @@ export interface IUser {
   bio?: string;
   location?: string;
   oauthProvider?: string | null;
+  skills?: string[];
+  interests?: string[];
+  availabilityHours?: number;
+  maxDistanceKm?: number;
   createdAt: string;
   updatedAt: string;
 }

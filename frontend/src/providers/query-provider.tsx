@@ -11,7 +11,7 @@ export function QueryProvider({ children }: { children: ReactNode }) {
           queries: {
             // Cache strategy optimized for rate limiting
             staleTime: 5 * 60 * 1000, // 5 minutes - data stays fresh longer
-            cacheTime: 10 * 60 * 1000, // 10 minutes - keep in memory
+            gcTime: 10 * 60 * 1000, // 10 minutes - keep in memory
             retry: 2, // Retry twice on network errors
             refetchOnWindowFocus: false, // Don't refetch on tab focus (reduces API calls)
             refetchOnReconnect: true, // Refetch when internet reconnects

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
+import { getToken } from '@/lib/auth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -14,7 +15,7 @@ import { X, Plus } from 'lucide-react';
 
 export default function ProfileEditPage() {
   const router = useRouter();
-  const { user, token } = useAuth();
+  const { user } = useAuth();
   const { toast } = useToast();
 
   const [loading, setLoading] = useState(false);
@@ -62,6 +63,7 @@ export default function ProfileEditPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const token = getToken();
     if (!token) return;
 
     setLoading(true);
@@ -98,7 +100,6 @@ export default function ProfileEditPage() {
       toast({
         title: 'Erreur',
         description: 'Impossible de mettre à jour le profil',
-        variant: 'destructive',
       });
     } finally {
       setLoading(false);
