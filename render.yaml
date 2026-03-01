@@ -5,6 +5,7 @@ services:
     runtime: node
     region: frankfurt
     plan: free
+    branch: master
     buildCommand: cd backend && npm ci && npx nest build
     startCommand: cd backend && npm run start:prod
     envVars:
@@ -40,6 +41,7 @@ services:
     runtime: node
     region: frankfurt
     plan: free
+    branch: master
     buildCommand: cd frontend && npm ci && npm run build
     startCommand: cd frontend && npm run start
     envVars:
