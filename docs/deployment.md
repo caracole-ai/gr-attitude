@@ -505,15 +505,13 @@ npm run seed:clear
 
 ### Structure technique
 
-#### Migration
+#### Entités modifiées
 
-`backend/src/database/migrations/1709294400000-AddIsDemoFlag.ts`
-
-Ajoute le champ `isDemo: boolean` aux tables :
-- `users`
-- `missions`
-- `offers`
-- `contributions`
+Champ `isDemo: boolean` ajouté aux entités :
+- `backend/src/users/entities/user.entity.ts`
+- `backend/src/missions/entities/mission.entity.ts`
+- `backend/src/offers/entities/offer.entity.ts`
+- `backend/src/contributions/entities/contribution.entity.ts`
 
 #### Seeder
 
@@ -528,6 +526,16 @@ Fonctions exportées :
 `backend/src/database/seed.ts`
 
 CLI standalone utilisant TypeORM DataSource directement.
+
+#### Scripts npm
+
+Définis dans `backend/package.json` :
+```json
+{
+  "seed": "ts-node -r tsconfig-paths/register src/database/seed.ts seed",
+  "seed:clear": "ts-node -r tsconfig-paths/register src/database/seed.ts clear"
+}
+```
 
 ### ⚠️ Important
 
