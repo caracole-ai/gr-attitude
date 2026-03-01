@@ -153,6 +153,19 @@ export class OffersService {
     });
   }
 
+  async delete(id: string, userId: string): Promise<void> {
+    const offer = await this.offersRepository.findOneBy({ id });
+    if (!offer) {
+      throw new NotFoundException('Offer not found');
+    }
+    if (offer.creatorId !== userId) {
+      throw new ForbiddenException('Only the creator can delete this offer');
+    }
+
+    await this.correlationsRepository.delete({ offerId: id });
+    await this.offersRepository.delete(id);
+  }
+
   getCorrelations(offerId: string): Promise<Correlation[]> {
     return this.correlationsRepository.find({
       where: { offerId },

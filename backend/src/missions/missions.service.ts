@@ -329,6 +329,20 @@ export class MissionsService {
     });
   }
 
+  async delete(id: string, userId: string): Promise<void> {
+    const mission = await this.missionsRepository.findOneBy({ id });
+    if (!mission) {
+      throw new NotFoundException('Mission not found');
+    }
+    if (mission.creatorId !== userId) {
+      throw new ForbiddenException('Only the creator can delete this mission');
+    }
+
+    await this.contributionsRepository.delete({ missionId: id });
+    await this.correlationsRepository.delete({ missionId: id });
+    await this.missionsRepository.delete(id);
+  }
+
   getContributions(missionId: string): Promise<Contribution[]> {
     return this.contributionsRepository.find({
       where: { missionId },

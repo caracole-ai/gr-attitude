@@ -3,11 +3,14 @@ import {
   Get,
   Post,
   Patch,
+  Delete,
   Param,
   Body,
   Query,
   UseGuards,
   NotFoundException,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
 import { MissionsService } from './missions.service';
@@ -61,6 +64,14 @@ export class MissionsController {
     @Body() dto: UpdateMissionDto,
   ) {
     return this.missionsService.update(id, user.id, dto);
+  }
+
+  @Throttle({ short: { limit: 10, ttl: 60000 } })
+  @UseGuards(JwtAuthGuard)
+  @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  remove(@Param('id') id: string, @CurrentUser() user: { id: string }) {
+    return this.missionsService.delete(id, user.id);
   }
 
   @Throttle({ short: { limit: 10, ttl: 60000 } })
