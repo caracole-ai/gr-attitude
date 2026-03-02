@@ -8,7 +8,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { MissionProgress } from '@/components/missions/MissionProgress';
 import { ContributionButtons } from '@/components/missions/ContributionButtons';
 import { CloseMissionDialog } from '@/components/missions/CloseMissionDialog';
 import { EditMissionDialog } from '@/components/missions/EditMissionDialog';
@@ -26,11 +25,19 @@ import {
   MissionStatus,
   type Urgency,
 } from '@/lib/types';
+import { FadeIn, StaggerContainer, StaggerItem } from '@/components/ui/motion';
+import { CategoryIcon, CATEGORY_COLORS } from '@/components/icons/CategoryIcon';
 
-const URGENCY_COLORS: Record<Urgency, string> = {
-  faible: 'bg-emerald-100 text-emerald-800 hover:bg-emerald-100',
-  moyen: 'bg-amber-100 text-amber-800 hover:bg-amber-100',
-  urgent: 'bg-red-100 text-red-800 hover:bg-red-100',
+const URGENCY_STYLES: Record<Urgency, string> = {
+  faible: 'bg-emerald-50 text-emerald-700 border border-emerald-200',
+  moyen: 'bg-amber-50 text-amber-700 border border-amber-200',
+  urgent: 'bg-red-50 text-red-700 border border-red-200',
+};
+
+const URGENCY_DOT: Record<Urgency, string> = {
+  faible: 'bg-emerald-500',
+  moyen: 'bg-amber-500',
+  urgent: 'bg-red-500',
 };
 
 function daysUntil(dateStr: string): number {
@@ -103,147 +110,214 @@ export default function MissionDetailPage({
   const isCreator = user?.id === mission.creatorId;
   const isOpen = mission.status === MissionStatus.OUVERTE || mission.status === MissionStatus.EN_COURS;
   const daysLeft = daysUntil(mission.expiresAt);
+  const categoryColor = CATEGORY_COLORS[mission.category];
+  const creatorInitial = mission.creator?.displayName?.charAt(0).toUpperCase() ?? 'U';
 
   return (
     <div className="container mx-auto max-w-3xl px-4 py-8 space-y-6">
-      {/* Header badges */}
-      <div className="flex items-center gap-2 flex-wrap">
-        <Badge variant="outline">{CATEGORY_LABELS[mission.category]}</Badge>
-        <Badge className={URGENCY_COLORS[mission.urgency]}>
-          {URGENCY_LABELS[mission.urgency]}
-        </Badge>
-        <Badge variant="outline">{HELP_TYPE_LABELS[mission.helpType]}</Badge>
-        {!isOpen && (
-          <Badge variant="secondary">
-            {mission.status === MissionStatus.RESOLUE ? 'Resolue' : 'Expiree'}
-          </Badge>
-        )}
-      </div>
-
-      {/* Title + creator */}
-      <div>
-        <h1 className="text-2xl font-bold">{mission.title}</h1>
-        <div className="flex items-center gap-2 mt-2 text-sm text-muted-foreground">
-          <Avatar className="h-6 w-6">
-            <AvatarFallback className="text-xs">
-              {mission.creator?.displayName?.charAt(0).toUpperCase() ?? 'U'}
-            </AvatarFallback>
-          </Avatar>
-          <span>{mission.creator?.displayName}</span>
-          <span>&middot;</span>
-          <span>{timeAgo(mission.createdAt)}</span>
+      {/* Gradient header card */}
+      <FadeIn>
+        <div
+          className="rounded-2xl p-6 relative overflow-hidden"
+          style={{
+            background: `linear-gradient(135deg, ${categoryColor}1a 0%, ${categoryColor}0a 100%)`,
+            border: `1px solid ${categoryColor}33`,
+          }}
+        >
+          <div className="flex items-start gap-4">
+            <div
+              className="rounded-xl p-3 flex-shrink-0"
+              style={{ background: `${categoryColor}22` }}
+            >
+              <CategoryIcon category={mission.category} size={36} />
+            </div>
+            <div className="flex-1 min-w-0">
+              {/* Badges */}
+              <div className="flex items-center gap-2 flex-wrap mb-3">
+                <span
+                  className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold"
+                  style={{ background: `${categoryColor}22`, color: categoryColor }}
+                >
+                  {CATEGORY_LABELS[mission.category]}
+                </span>
+                <Badge className={`${URGENCY_STYLES[mission.urgency]} text-xs font-semibold`}>
+                  <span className={`w-1.5 h-1.5 rounded-full mr-1.5 inline-block ${URGENCY_DOT[mission.urgency]}`} />
+                  {URGENCY_LABELS[mission.urgency]}
+                </Badge>
+                <Badge variant="outline" className="text-xs font-medium">
+                  {HELP_TYPE_LABELS[mission.helpType]}
+                </Badge>
+                {!isOpen && (
+                  <Badge variant="secondary" className="text-xs font-medium">
+                    {mission.status === MissionStatus.RESOLUE ? 'Resolue' : 'Expiree'}
+                  </Badge>
+                )}
+              </div>
+              {/* Title */}
+              <h1 className="text-2xl font-bold leading-tight mb-3 font-display">
+                {mission.title}
+              </h1>
+              {/* Creator */}
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Avatar
+                  className="h-6 w-6 border-2"
+                  style={{ borderColor: `${categoryColor}66` }}
+                >
+                  <AvatarFallback
+                    className="text-xs font-semibold"
+                    style={{ background: `${categoryColor}22`, color: categoryColor }}
+                  >
+                    {creatorInitial}
+                  </AvatarFallback>
+                </Avatar>
+                <span className="font-medium text-foreground">{mission.creator?.displayName}</span>
+                <span>&middot;</span>
+                <span>{timeAgo(mission.createdAt)}</span>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
+      </FadeIn>
 
       {/* Description */}
-      <Card>
-        <CardContent className="pt-6">
-          <p className="whitespace-pre-wrap">{mission.description}</p>
-        </CardContent>
-      </Card>
+      <FadeIn delay={0.1}>
+        <Card className="shadow-sm">
+          <CardContent className="pt-6">
+            <p className="whitespace-pre-wrap text-foreground/90 leading-relaxed">
+              {mission.description}
+            </p>
+          </CardContent>
+        </Card>
+      </FadeIn>
 
       {/* Info row */}
-      <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
-        {mission.location && (
-          <div className="flex items-center gap-1">
-            <MapPin className="h-4 w-4" />
-            {mission.location}
-          </div>
-        )}
-        {mission.tags && mission.tags.length > 0 && (
-          <div className="flex items-center gap-1">
-            <Tag className="h-4 w-4" />
-            {mission.tags.join(', ')}
-          </div>
-        )}
-        {isOpen && (
-          <div className="flex items-center gap-1">
-            <Clock className="h-4 w-4" />
-            Expire dans {daysLeft} jour{daysLeft !== 1 ? 's' : ''}
-          </div>
-        )}
-      </div>
+      <FadeIn delay={0.15}>
+        <div className="flex flex-wrap gap-4 text-sm text-muted-foreground px-1">
+          {mission.location && (
+            <div className="flex items-center gap-1.5">
+              <MapPin className="h-4 w-4" style={{ color: categoryColor }} />
+              {mission.location}
+            </div>
+          )}
+          {mission.tags && mission.tags.length > 0 && (
+            <div className="flex items-center gap-1.5">
+              <Tag className="h-4 w-4" style={{ color: categoryColor }} />
+              {mission.tags.join(', ')}
+            </div>
+          )}
+          {isOpen && (
+            <div className="flex items-center gap-1.5">
+              <Clock className="h-4 w-4" style={{ color: categoryColor }} />
+              Expire dans {daysLeft} jour{daysLeft !== 1 ? 's' : ''}
+            </div>
+          )}
+        </div>
+      </FadeIn>
 
-      {/* Progress */}
-      <div>
-        <p className="text-sm font-medium mb-2">Progression</p>
-        <MissionProgress percent={mission.progressPercent} />
-      </div>
+      {/* Animated gradient progress bar */}
+      <FadeIn delay={0.2}>
+        <div className="space-y-2 px-1">
+          <div className="flex items-center justify-between">
+            <p className="text-sm font-medium">Progression</p>
+            <span className="text-sm font-bold" style={{ color: categoryColor }}>
+              {mission.progressPercent}%
+            </span>
+          </div>
+          <div className="h-2.5 w-full rounded-full bg-muted overflow-hidden">
+            <div
+              className="h-full rounded-full transition-all duration-700 ease-out"
+              style={{
+                width: `${mission.progressPercent}%`,
+                background: `linear-gradient(90deg, ${categoryColor}88, ${categoryColor})`,
+              }}
+            />
+          </div>
+        </div>
+      </FadeIn>
 
       <Separator />
 
       {/* Contribution section */}
       {isOpen && (
-        <div>
-          <h2 className="text-lg font-semibold mb-4">Contribuer</h2>
-          <ContributionButtons missionId={mission.id} />
-        </div>
+        <FadeIn delay={0.25}>
+          <div>
+            <h2 className="text-lg font-semibold mb-4">Contribuer</h2>
+            <ContributionButtons missionId={mission.id} />
+          </div>
+        </FadeIn>
       )}
 
       {/* Creator actions */}
       {isCreator && (
-        <div className="flex flex-wrap gap-2">
-          {isOpen && <CloseMissionDialog missionId={mission.id} />}
-          <EditMissionDialog mission={mission} />
-          <Button
-            variant="destructive"
-            size="sm"
-            onClick={handleDelete}
-            disabled={deleteMission.isPending}
-          >
-            <Trash2 className="h-4 w-4 mr-2" />
-            {deleteMission.isPending ? 'Suppression...' : 'Supprimer'}
-          </Button>
-        </div>
+        <FadeIn delay={0.3}>
+          <div className="flex flex-wrap gap-2">
+            {isOpen && <CloseMissionDialog missionId={mission.id} />}
+            <EditMissionDialog mission={mission} />
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleDelete}
+              disabled={deleteMission.isPending}
+              className="border-destructive/30 text-destructive hover:bg-destructive hover:text-white"
+            >
+              <Trash2 className="h-4 w-4 mr-2" />
+              {deleteMission.isPending ? 'Suppression...' : 'Supprimer'}
+            </Button>
+          </div>
+        </FadeIn>
       )}
 
       <Separator />
 
       {/* Contributions list */}
-      <div>
-        <h2 className="text-lg font-semibold mb-4">
-          Contributions ({contributions?.length ?? 0})
-        </h2>
-        {contributions && contributions.length > 0 ? (
-          <div className="space-y-3">
-            {contributions.map((contribution) => (
-              <Card key={contribution.id}>
-                <CardHeader className="py-3 px-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Avatar className="h-6 w-6">
-                        <AvatarFallback className="text-xs">
-                          {contribution.user?.displayName?.charAt(0).toUpperCase() ?? 'U'}
-                        </AvatarFallback>
-                      </Avatar>
-                      <span className="text-sm font-medium">
-                        {contribution.user?.displayName}
-                      </span>
-                      <Badge variant="secondary" className="text-xs">
-                        {CONTRIBUTION_TYPE_LABELS[contribution.type]}
-                      </Badge>
-                    </div>
-                    <span className="text-xs text-muted-foreground">
-                      {timeAgo(contribution.createdAt)}
-                    </span>
-                  </div>
-                </CardHeader>
-                {contribution.message && (
-                  <CardContent className="pt-0 px-4 pb-3">
-                    <p className="text-sm text-muted-foreground">
-                      {contribution.message}
-                    </p>
-                  </CardContent>
-                )}
-              </Card>
-            ))}
-          </div>
-        ) : (
-          <p className="text-sm text-muted-foreground">
-            Aucune contribution pour le moment. Soyez le premier !
-          </p>
-        )}
-      </div>
+      <FadeIn delay={0.35}>
+        <div>
+          <h2 className="text-lg font-semibold mb-4">
+            Contributions ({contributions?.length ?? 0})
+          </h2>
+          {contributions && contributions.length > 0 ? (
+            <StaggerContainer className="space-y-3">
+              {contributions.map((contribution) => (
+                <StaggerItem key={contribution.id}>
+                  <Card className="shadow-sm border-border/60">
+                    <CardHeader className="py-3 px-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <Avatar className="h-6 w-6">
+                            <AvatarFallback className="text-xs bg-primary/10 text-primary font-semibold">
+                              {contribution.user?.displayName?.charAt(0).toUpperCase() ?? 'U'}
+                            </AvatarFallback>
+                          </Avatar>
+                          <span className="text-sm font-medium">
+                            {contribution.user?.displayName}
+                          </span>
+                          <Badge variant="secondary" className="text-xs">
+                            {CONTRIBUTION_TYPE_LABELS[contribution.type]}
+                          </Badge>
+                        </div>
+                        <span className="text-xs text-muted-foreground">
+                          {timeAgo(contribution.createdAt)}
+                        </span>
+                      </div>
+                    </CardHeader>
+                    {contribution.message && (
+                      <CardContent className="pt-0 px-4 pb-3">
+                        <p className="text-sm text-muted-foreground">
+                          {contribution.message}
+                        </p>
+                      </CardContent>
+                    )}
+                  </Card>
+                </StaggerItem>
+              ))}
+            </StaggerContainer>
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              Aucune contribution pour le moment. Soyez le premier !
+            </p>
+          )}
+        </div>
+      </FadeIn>
     </div>
   );
 }
