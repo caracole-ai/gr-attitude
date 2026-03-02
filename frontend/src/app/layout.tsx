@@ -59,7 +59,7 @@ export default function RootLayout({
   return (
     <html lang="fr">
       <body
-        className={`${nunito.variable} ${inter.variable} ${marckScript.variable} ${publicSans.variable} antialiased`}
+        className={`${nunito.variable} ${inter.variable} ${marckScript.variable} ${publicSans.variable} antialiased bg-gradient-stitch`}
       >
         <QueryProvider>
           <AuthProvider>
