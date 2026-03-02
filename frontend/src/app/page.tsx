@@ -38,16 +38,16 @@ export default function HomePage() {
   const { data } = useMissions({ limit: 6 });
 
   return (
-    <div>
+    <div className="min-h-screen bg-gradient-stitch">
       {/* Hero */}
       <section className="relative overflow-hidden py-24 px-4 text-center">
         {/* Decorative blobs */}
         <div
-          className="absolute w-[600px] h-[600px] bg-purple-300/20 rounded-full blur-3xl -top-48 -right-32 pointer-events-none"
+          className="absolute w-[600px] h-[600px] bg-[#9333ea]/20 rounded-full blur-[140px] -top-48 -right-32 pointer-events-none animate-pulse"
           aria-hidden="true"
         />
         <div
-          className="absolute w-[450px] h-[450px] bg-pink-300/15 rounded-full blur-3xl -bottom-24 -left-32 pointer-events-none"
+          className="absolute w-[450px] h-[450px] bg-indigo-500/15 rounded-full blur-[140px] -bottom-24 -left-32 pointer-events-none"
           aria-hidden="true"
         />
 
@@ -77,11 +77,11 @@ export default function HomePage() {
               <Button
                 size="lg"
                 asChild
-                className="h-12 rounded-2xl shadow-xl bg-purple-600 text-white hover:bg-purple-700 border-0 px-8 font-semibold text-base"
+                className="h-12 rounded-2xl shadow-[0_20px_40px_-10px_rgba(147,51,234,0.4)] bg-[#9333ea] text-white hover:opacity-90 border-0 px-8 font-bold text-base"
               >
                 <Link href="/missions/new">{t('home.ctaCreate')}</Link>
               </Button>
-              <Button size="lg" variant="outline" asChild className="h-12 rounded-2xl px-8 bg-white/50 backdrop-blur-sm">
+              <Button size="lg" variant="outline" asChild className="h-12 rounded-2xl px-8 glass-sidebar-liquid border-white/60 hover:bg-white/80 font-bold">
                 <Link href="/offers/new">{t('home.ctaOffer')}</Link>
               </Button>
             </div>
@@ -191,11 +191,11 @@ export default function HomePage() {
             <Button
               size="lg"
               asChild
-              className="h-12 rounded-2xl shadow-xl bg-purple-600 text-white hover:bg-purple-700 border-0 px-8 font-semibold text-base"
+              className="h-12 rounded-2xl shadow-[0_20px_40px_-10px_rgba(147,51,234,0.4)] bg-[#9333ea] text-white hover:opacity-90 border-0 px-8 font-bold text-base"
             >
               <Link href="/missions/new">{t('home.ctaCreate')}</Link>
             </Button>
-            <Button size="lg" variant="outline" asChild className="h-12 rounded-2xl px-8 bg-white/50 backdrop-blur-sm">
+            <Button size="lg" variant="outline" asChild className="h-12 rounded-2xl px-8 glass-sidebar-liquid border-white/60 hover:bg-white/80 font-bold">
               <Link href="/missions">{t('home.ctaExplore')}</Link>
             </Button>
           </div>
