@@ -254,10 +254,10 @@ export default function HomePage() {
               asChild
               className="h-12 rounded-2xl shadow-[0_20px_40px_-10px_rgba(147,51,234,0.4)] bg-[#9333ea] text-white hover:opacity-90 border-0 px-8 font-bold text-base"
             >
-              <Link href="/missions/new">{t('home.ctaCreate')}</Link>
+              <Link href="/missions/new">Exprimez un besoin</Link>
             </Button>
             <Button size="lg" variant="outline" asChild className="h-12 rounded-2xl px-8 glass-sidebar-liquid border-white/60 hover:bg-white/80 font-bold">
-              <Link href="/missions">{t('home.ctaExplore')}</Link>
+              <Link href="/offers/new">Proposez un soutien</Link>
             </Button>
           </div>
         </motion.div>
