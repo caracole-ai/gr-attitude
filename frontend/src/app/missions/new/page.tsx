@@ -1,4 +1,5 @@
 'use client';
+import { t } from '@/i18n';
 
 import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
@@ -24,24 +25,7 @@ import { FormWizard, type WizardStep } from '@/components/forms/FormWizard';
 import { ValidatedInput } from '@/components/forms/ValidatedInput';
 import { BadgeSelector } from '@/components/forms/BadgeSelector';
 import { ToggleSwitch } from '@/components/forms/ToggleSwitch';
-
-const MIN_TITLE_LENGTH = 5;
-const MIN_DESCRIPTION_LENGTH = 10;
-
-const CATEGORY_ICONS: Partial<Record<MissionCategory, string>> = {
-  [MissionCategory.DEMENAGEMENT]: '📦',
-  [MissionCategory.BRICOLAGE]: '🔧',
-  [MissionCategory.NUMERIQUE]: '💻',
-  [MissionCategory.ADMINISTRATIF]: '📋',
-  [MissionCategory.GARDE_ENFANTS]: '👶',
-  [MissionCategory.TRANSPORT]: '🚗',
-  [MissionCategory.ECOUTE]: '👂',
-  [MissionCategory.EMPLOI]: '💼',
-  [MissionCategory.ALIMENTATION]: '🍽️',
-  [MissionCategory.ANIMAUX]: '🐾',
-  [MissionCategory.EDUCATION]: '📚',
-  [MissionCategory.AUTRE]: '✨',
-};
+import { MIN_TITLE_LENGTH, MIN_DESCRIPTION_LENGTH, CATEGORY_ICONS } from '@/lib/constants';
 
 const HELP_TYPE_ICONS: Partial<Record<HelpType, string>> = {
   [HelpType.FINANCIERE]: '💰',
@@ -135,7 +119,7 @@ export default function NewMissionPage() {
       { ...form, tags },
       {
         onSuccess: (mission) => {
-          toast.success('Mission créée !');
+          toast.success(t('besoins.created'));
           router.push(`/missions/${mission.id}`);
         },
         onError: (error) => {
@@ -285,13 +269,13 @@ export default function NewMissionPage() {
     <>
     <AuthRequiredModal open={showAuthModal} onOpenChange={setShowAuthModal} />
     <FormWizard
-      title="Créer une Mission"
+      title={t("besoins.createTitle")}
       steps={steps}
       currentStep={step}
       onStepChange={setStep}
       onSubmit={handleSubmit}
       isSubmitting={createMission.isPending}
-      submitLabel="Valider ma mission"
+      submitLabel={t("besoins.submitLabel")}
     />
     </>
   );
