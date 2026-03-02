@@ -7,6 +7,7 @@ import { SocketProvider } from '@/providers/socket-provider';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { Toaster } from '@/components/ui/sonner';
+import { AuthGuard } from '@/components/auth/AuthGuard';
 
 const nunito = Nunito({
   variable: '--font-nunito',
@@ -63,6 +64,7 @@ export default function RootLayout({
                 <main className="flex-1">{children}</main>
                 <Footer />
               </div>
+              <AuthGuard />
               <Toaster />
             </SocketProvider>
           </AuthProvider>

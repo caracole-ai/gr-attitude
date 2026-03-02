@@ -56,6 +56,11 @@ async function fetchApi<T>(endpoint: string, options?: RequestInit): Promise<T> 
   if (!res.ok) {
     const error = await res.json().catch(() => ({ message: 'Erreur serveur' }));
     console.error('[API] Erreur', res.status, endpoint, ':', error.message);
+    if (res.status === 401 || res.status === 403) {
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('auth:required'));
+      }
+    }
     throw new Error(error.message || 'Erreur serveur');
   }
   return res.json();
