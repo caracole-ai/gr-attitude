@@ -87,6 +87,10 @@ Browser → Next.js (CSR) → fetch(API_URL) → NestJS → TypeORM → SQLite
 - **Category icons**: Colored circles with semi-transparent background (`categoryAccent + 25` opacity)
 - **Animations**: `animate-float`, `text-glow`, Framer Motion for page transitions
 - **Layout**: Header is `sticky top-0`, pages use `pt-20` on first element for spacing
+- **Solidarity thread**: iMessage/Messenger-style chat bubbles on mission detail pages (alternating left/right, gradient colors per contribution type)
+- **Categories**: demenagement, bricolage, numerique, administratif, garde_enfants, transport, ecoute, emploi, alimentation, animaux, education, handicap, autre
+- **HelpType**: financiere, conseil, materiel, relation, autre
+- **OfferType**: don, competence, materiel, service, ecoute, autre
 
 ## Key Design Decisions
 
