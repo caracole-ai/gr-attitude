@@ -4,6 +4,8 @@ import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { MissionProgress } from './MissionProgress';
+import { ScaleOnHover } from '@/components/ui/motion';
+import { CategoryIcon, CATEGORY_COLORS } from '@/components/icons/CategoryIcon';
 import {
   type IMission,
   CATEGORY_LABELS,
@@ -36,33 +38,43 @@ interface MissionCardProps {
 }
 
 export function MissionCard({ mission }: MissionCardProps) {
+  const categoryColor = CATEGORY_COLORS[mission.category] ?? '#6b7280';
+
   return (
-    <Link href={`/missions/${mission.id}`}>
-      <Card className="h-full transition-shadow hover:shadow-md cursor-pointer">
-        <CardHeader className="pb-2">
-          <div className="flex items-center gap-2 mb-1">
-            <Badge variant="outline">
-              {CATEGORY_LABELS[mission.category]}
-            </Badge>
-            <Badge className={URGENCY_COLORS[mission.urgency]}>
-              {URGENCY_LABELS[mission.urgency]}
-            </Badge>
-          </div>
-          <CardTitle className="text-base line-clamp-2">
-            {mission.title}
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <p className="text-sm text-muted-foreground line-clamp-2">
-            {mission.description}
-          </p>
-          <MissionProgress percent={mission.progressPercent} />
-          <div className="flex items-center justify-between text-xs text-muted-foreground">
-            <span>{mission.creator?.displayName}</span>
-            <span>{timeAgo(mission.createdAt)}</span>
-          </div>
-        </CardContent>
-      </Card>
+    <Link href={`/missions/${mission.id}`} className="h-full block">
+      <ScaleOnHover className="h-full">
+        <Card className="h-full cursor-pointer hover:shadow-lg transition-shadow relative overflow-hidden">
+          <div
+            className="absolute left-0 top-0 h-full w-1"
+            aria-hidden="true"
+            style={{
+              background: `linear-gradient(180deg, ${categoryColor}, ${categoryColor}55)`,
+            }}
+          />
+          <CardHeader className="pb-2 pl-5">
+            <div className="flex items-center gap-2 mb-1">
+              <CategoryIcon category={mission.category} size={18} />
+              <Badge variant="outline">{CATEGORY_LABELS[mission.category]}</Badge>
+              <Badge className={URGENCY_COLORS[mission.urgency]}>
+                {URGENCY_LABELS[mission.urgency]}
+              </Badge>
+            </div>
+            <CardTitle className="text-base line-clamp-2">
+              {mission.title}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3 pl-5">
+            <p className="text-sm text-muted-foreground line-clamp-2">
+              {mission.description}
+            </p>
+            <MissionProgress percent={mission.progressPercent} />
+            <div className="flex items-center justify-between text-xs text-muted-foreground">
+              <span>{mission.creator?.displayName}</span>
+              <span>{timeAgo(mission.createdAt)}</span>
+            </div>
+          </CardContent>
+        </Card>
+      </ScaleOnHover>
     </Link>
   );
 }
