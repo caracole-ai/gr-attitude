@@ -56,13 +56,15 @@ export function MissionCard({ mission }: MissionCardProps) {
 
   return (
     <Link href={`/missions/${mission.id}`} className="block group">
-      <div className="relative h-full glass-card-liquid rounded-[3rem] p-8 pt-16">
-        {/* Urgency badge - top left */}
-        <div className="absolute top-3 left-3 z-10">
-          <div className={`${URGENCY_COLORS[mission.urgency]} px-4 py-2 rounded-2xl text-xs font-black uppercase tracking-widest shadow-lg`}>
-            {URGENCY_LABELS[mission.urgency]}
+      <div className="relative h-full glass-card-liquid rounded-[3rem] p-8 pt-10">
+        {/* Urgency badge - only shown when urgent, overflowing top-left like the category icon */}
+        {mission.urgency === 'urgent' && (
+          <div className="absolute -top-3 -left-3 z-10">
+            <div className={`${URGENCY_COLORS[mission.urgency]} px-3 py-1 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg`}>
+              {URGENCY_LABELS[mission.urgency]}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Category icon - top right, slightly overflowing card */}
         <div className="absolute -top-4 -right-4 z-10">
