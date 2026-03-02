@@ -69,9 +69,9 @@ export function OfferCard({ offer }: OfferCardProps) {
 
   return (
     <Link href={`/offers/${offer.id}`} className="block group">
-      <div className="relative h-full glass-card-liquid rounded-[3rem] p-8 pt-12">
+      <div className="relative h-full glass-card-liquid rounded-[3rem] p-8 pt-16">
         {/* Offer type badge - top left */}
-        <div className="absolute -top-3 -left-3 z-10">
+        <div className="absolute top-3 left-3 z-10">
           <div className={`${OFFER_TYPE_COLORS[offer.offerType]} px-4 py-2 rounded-2xl text-xs font-black uppercase tracking-widest shadow-lg`}>
             {OFFER_TYPE_LABELS[offer.offerType]}
           </div>
